@@ -48,6 +48,19 @@ public class TokenService {
         }
     }
 
+    public Instant extractExpiration(String token) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            return JWT.require(algorithm)
+                    .withIssuer("auth-api")
+                    .build()
+                    .verify(token)
+                    .getExpiresAtAsInstant();
+        } catch (JWTVerificationException e) {
+            return Instant.now();
+        }
+    }
+
     public Instant getTokenExpiryDate() {
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
     }

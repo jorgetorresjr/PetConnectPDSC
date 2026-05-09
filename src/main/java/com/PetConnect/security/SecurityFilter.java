@@ -1,5 +1,6 @@
 package com.PetConnect.security;
 
+import com.PetConnect.repositories.TokenExpiradoRepository;
 import com.PetConnect.repositories.UsuarioRepository;
 import com.PetConnect.services.TokenService;
 import jakarta.servlet.FilterChain;
@@ -17,13 +18,18 @@ import java.io.IOException;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
+
     @Autowired
     private TokenService tokenService;
     @Autowired
     private UsuarioRepository userRepository;
+    @Autowired
+    private TokenExpiradoRepository tokenExpiradoRepository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
             throws ServletException, IOException {
 
         String uri = request.getRequestURI();
@@ -35,25 +41,36 @@ public class SecurityFilter extends OncePerRequestFilter {
         String token = recoverToken(request);
 
         if (token != null) {
-            try {
-                String email = tokenService.validateToken(token);
 
-                UserDetails user = (UserDetails) userRepository.findByEmail(email).orElse(null);
-
-                if (user != null) {
-                    var authentication = new UsernamePasswordAuthenticationToken(
-                            user, null, user.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                } else {
-                    SecurityContextHolder.clearContext();
-                }
-
-            } catch (Exception e) {
-                System.out.println("ERRO AO VALIDAR TOKEN: " + e.getMessage());
-                SecurityContextHolder.clearContext();
+            if (tokenExpiradoRepository.existsByToken(token)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\": \"Sessão encerrada. Faça login novamente.\"}");
+                return;
             }
-        } else {
-            System.out.println("TOKEN NULO — nenhuma autenticação enviada");
+
+            String email = tokenService.validateToken(token);
+
+            if (email == null || email.isBlank()) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\": \"Token inválido ou expirado.\"}");
+                return;
+            }
+
+            UserDetails user = (UserDetails) userRepository.findByEmail(email).orElse(null);
+
+            if (user != null) {
+                var authentication = new UsernamePasswordAuthenticationToken(
+                        user, null, user.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\": \"Usuário não encontrado.\"}");
+                return;
+            }
+
         }
 
         filterChain.doFilter(request, response);
@@ -66,5 +83,4 @@ public class SecurityFilter extends OncePerRequestFilter {
         }
         return header.substring(7);
     }
-
 }
