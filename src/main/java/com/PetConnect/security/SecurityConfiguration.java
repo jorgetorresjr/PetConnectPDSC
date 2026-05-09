@@ -12,6 +12,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -25,6 +30,8 @@ public class SecurityConfiguration {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
 
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
@@ -33,6 +40,18 @@ public class SecurityConfiguration {
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://127.0.0.1:5500"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        config.setAllowedHeaders(List.of("*"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
     @Bean
