@@ -75,26 +75,30 @@ public class LoginController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Valid CadastroDTO cadastro) {
 
-        if (userRepository.findByEmail(cadastro.email()) != null) {
+        if (userRepository.findByEmail(cadastro.email()).isPresent()) {
             return ResponseEntity.badRequest().body("Email já cadastrado");
         }
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(cadastro.senha());
 
-//        PetOwner user = new PetOwner();
-//
-//        user.setNome(cadastro.nome());
-//        user.setEmail(cadastro.email());
-//        user.setSenha(encryptedPassword);
-//        user.setCpf(cadastro.cpf());
-//        user.setLogin(cadastro.login());
-//        user.setEndereco(cadastro.endereco());
-//        user.setTelefones(cadastro.telefones());
-//        user.setDataNascimento(cadastro.dataNascimento());
-//
-//        userRepository.save(user);
+        Usuario user;
+        if (cadastro.role() == com.PetConnect.entities.enums.UserRole.PET_SITTER) {
+            user = new com.PetConnect.entities.PetSitter();
+        } else {
+            user = new com.PetConnect.entities.PetOwner();
+        }
 
-        return ResponseEntity.ok().build();
+        user.setNome(cadastro.nome());
+        user.setEmail(cadastro.email());
+        user.setSenha(encryptedPassword);
+        user.setCpf(cadastro.cpf());
+        user.setLogin(cadastro.login());
+        user.setEndereco(cadastro.endereco());
+        user.setTelefone(cadastro.telefone()); 
+        user.setDataNascimento(cadastro.dataNascimento());
+        userRepository.save(user);
+
+        return ResponseEntity.ok().body("Usuário cadastrado com sucesso como " + cadastro.role());
     }
 }
 

@@ -67,6 +67,22 @@ public abstract class Usuario {
     @Column(name = "DT_NASCIMENTO", nullable = true)
     protected Date dataNascimento;
 
+    @ManyToMany
+    @JoinTable(
+        name = "TB_USUARIO_SERVICO",
+        joinColumns = @JoinColumn(name = "ID_USUARIO"),
+        inverseJoinColumns = @JoinColumn(name = "ID_SERVICO")
+    )
+    private List<Servico> servicos = new ArrayList<>();
+
+    public List<Servico> getServicos() {
+        return servicos;
+    }
+
+    public void setServicos(List<Servico> servicos) {
+        this.servicos = servicos;
+    }
+
     public Endereco getEndereco() {
         return endereco;
     }
