@@ -1,6 +1,6 @@
-package com.PetConnect.entities.DTOs;
+package com.PetConnect.DTOs;
 
-import com.PetConnect.entities.Endereco;
+import com.PetConnect.entities.Address;
 import com.PetConnect.entities.enums.UserRole;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -10,28 +10,26 @@ import jakarta.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.br.CPF;
 
 import java.util.Date;
-import java.util.List;
 
-public record CadastroDTO(
+public record RegisterDTO(
         @Valid
         @NotNull
-        Endereco endereco,
+        Address address,
 
-        String telefone,
+        String phone,
 
         @CPF
         @NotBlank
         String cpf,
 
-        @NotBlank
-        String login,
+
 
         @NotBlank
         @Pattern(
                 regexp = "^[A-ZÀ-Ú][a-zà-ú]+(?:\\s[A-ZÀ-Ú][a-zà-ú]+)*$",
-                message = "Nome inválido"
+                message = "Invalid name"
         )
-        String nome,
+        String name,
 
         @Email
         @NotBlank
@@ -39,15 +37,14 @@ public record CadastroDTO(
 
         @Pattern(
                 regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*\\W).+$",
-                message = "Senha deve conter letra maiúscula, minúscula, número e caractere especial"
+                message = "Password must contain uppercase, lowercase, number and special character"
         )
         @NotBlank
-        String senha,
+        String password,
 
         @NotNull
-        Date dataNascimento,
+        Date birthDate,
 
-        UserRole role
+        String role
 
-) {
-}
+) {}

@@ -16,16 +16,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.PetConnect.DTOs.RegisterDTO;
+import com.PetConnect.DTOs.LoginDTO;
+import com.PetConnect.DTOs.LoginResponseDTO;
 import com.PetConnect.entities.PetOwner;
 import com.PetConnect.entities.PetSitter;
-import com.PetConnect.entities.TokenExpirado;
-import com.PetConnect.entities.Usuario;
-import com.PetConnect.entities.DTOs.CadastroDTO;
-import com.PetConnect.entities.DTOs.LoginDTO;
-import com.PetConnect.entities.DTOs.LoginResponseDTO;
+import com.PetConnect.entities.ExpiredToken;
+import com.PetConnect.entities.User;
 import com.PetConnect.entities.enums.UserRole;
-import com.PetConnect.repositories.TokenExpiradoRepository;
-import com.PetConnect.repositories.UsuarioRepository;
+import com.PetConnect.repositories.ExpiredTokenRepository;
+import com.PetConnect.repositories.UserRepository;
 import com.PetConnect.services.TokenService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,21 +37,21 @@ public class LoginController {
 	@Autowired
 	private AuthenticationManager authenticationManager;
 	@Autowired
-	private UsuarioRepository userRepository;
+	private UserRepository userRepository;
 	@Autowired
 	TokenService tokenService;
 	@Autowired
-	private TokenExpiradoRepository tokenExpiradoRepository;
+	private ExpiredTokenRepository expiredTokenRepository;
 
 	@PostMapping("/login")
-	public ResponseEntity login(@RequestBody @Valid LoginDTO login) {
-		var usernamePassword = new UsernamePasswordAuthenticationToken(login.email(), login.senha());
-		var authentication = this.authenticationManager.authenticate(usernamePassword);
+	       public ResponseEntity<?> login(@RequestBody @Valid LoginDTO login) {
+		       var usernamePassword = new UsernamePasswordAuthenticationToken(login.getEmail(), login.getSenha());
+		       var authentication = this.authenticationManager.authenticate(usernamePassword);
 
-		var token = tokenService.generateToken((UserDetails) authentication.getPrincipal());
+		       var token = tokenService.generateToken((UserDetails) authentication.getPrincipal());
 
-		return ResponseEntity.ok(new LoginResponseDTO(token));
-	}
+		       return ResponseEntity.ok(new LoginResponseDTO(token));
+	       }
 
 	@PostMapping("/logout")
 	public ResponseEntity<Map<String, String>> logout(HttpServletRequest request) {
@@ -64,53 +64,46 @@ public class LoginController {
 
 		String token = authHeader.substring(7);
 
-		if (tokenExpiradoRepository.existsByToken(token)) {
-			return ResponseEntity.ok(Map.of("message", "Sessão já encerrada."));
-		}
+		   if (expiredTokenRepository.existsByToken(token)) {
+			   return ResponseEntity.ok(Map.of("message", "Sessão já encerrada."));
+		   }
 
-		Instant expiresAtInstant = tokenService.extractExpiration(token);
+		   Instant expiresAtInstant = tokenService.extractExpiration(token);
 
-		LocalDateTime expiresAt = expiresAtInstant
-				.atZone(ZoneOffset.of("-03:00"))
-				.toLocalDateTime();
+		   LocalDateTime expiresAt = expiresAtInstant
+				   .atZone(ZoneOffset.of("-03:00"))
+				   .toLocalDateTime();
 
-		tokenExpiradoRepository.save(new TokenExpirado(token, expiresAt));
+		   expiredTokenRepository.save(new ExpiredToken(token, expiresAt));
 
-		return ResponseEntity.ok(Map.of("message", "Logout realizado com sucesso."));
+		   return ResponseEntity.ok(Map.of("message", "Logout realizado com sucesso."));
 	}
 
-	@PostMapping("/register")
-	public ResponseEntity<?> register(@RequestBody @Valid CadastroDTO cadastro) {
+		@PostMapping("/register")
+		public ResponseEntity<?> register(@RequestBody @Valid RegisterDTO registerDTO) {
+			       if (userRepository.findByEmail(registerDTO.email()).isPresent()) {
+				       return ResponseEntity.badRequest().body("Email already registered");
+			       }
 
-		if (userRepository.findByEmail(cadastro.email()).isPresent()) {
-			return ResponseEntity.badRequest().body("Email já cadastrado");
-		}
-
-		String encryptedPassword = new BCryptPasswordEncoder().encode(cadastro.senha());
-
-		Usuario novoUsuario;
-
-		// Regra da US05: Criar Perfil de Tutor (PetOwner)
-		if (cadastro.role() == UserRole.PET_OWNER) {
-			novoUsuario = new PetOwner();
-		} else if (cadastro.role() == UserRole.PET_SITTER) {
-			novoUsuario = new PetSitter();
-		} else {
-			return ResponseEntity.badRequest().body("Role inválida.");
-		}
-
-		novoUsuario.setNome(cadastro.nome());
-		novoUsuario.setEmail(cadastro.email());
-		novoUsuario.setSenha(encryptedPassword);
-		novoUsuario.setCpf(cadastro.cpf());
-		novoUsuario.setLogin(cadastro.login()!= null ? cadastro.login() : cadastro.email()); // usando email como login
-		novoUsuario.setEndereco(cadastro.endereco());
-		novoUsuario.setTelefone(cadastro.telefone());
-		novoUsuario.setDataNascimento(cadastro.dataNascimento());
-
-		userRepository.save(novoUsuario);
-
-		return ResponseEntity.ok().build();
+			       String encryptedPassword = new BCryptPasswordEncoder().encode(registerDTO.password());
+			       User newUser;
+			       if ("PO".equals(registerDTO.role())) {
+				       newUser = new PetOwner();
+			       } else if ("PS".equals(registerDTO.role())) {
+				       newUser = new PetSitter();
+			       } else {
+				       return ResponseEntity.badRequest().body("Invalid role.");
+			       }
+			       newUser.setName(registerDTO.name());
+			       newUser.setEmail(registerDTO.email());
+			       newUser.setPassword(encryptedPassword);
+			       newUser.setCpf(registerDTO.cpf());
+			       newUser.setLogin(registerDTO.email() != null ? registerDTO.email() : registerDTO.email());
+			       newUser.setAddress(registerDTO.address());
+			       newUser.setPhone(registerDTO.phone());
+			       newUser.setBirthDate(registerDTO.birthDate());
+			       userRepository.save(newUser);
+			return ResponseEntity.ok().build();
 	}
 }
 

@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "TB_TOKENS_EXPIRADOS")
-public class TokenExpirado {
+public class ExpiredToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,9 +16,9 @@ public class TokenExpirado {
     @Column(nullable = false)
     private LocalDateTime expiresAt;
 
-    public TokenExpirado() {}
+    public ExpiredToken() {}
 
-    public TokenExpirado(String token, LocalDateTime expiresAt) {
+    public ExpiredToken(String token, LocalDateTime expiresAt) {
         this.token = token;
         this.expiresAt = expiresAt;
     }

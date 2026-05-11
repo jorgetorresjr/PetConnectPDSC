@@ -1,4 +1,4 @@
-package com.PetConnect.entities.DTOs;
+package com.PetConnect.DTOs;
 
 public record LoginResponseDTO(String token) {
 }

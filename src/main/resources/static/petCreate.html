@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastrar Pet</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="petCreate.js" defer></script>
+    <script src="auth.js" defer></script>
+    <script>if (typeof setupLogoutButton === 'function') setupLogoutButton();</script>
+</head>
+<body>
+    <div class="container">
+        <h2>Cadastrar Pet</h2>
+        <img src="img/Logo_PetConnect.png" alt="PetConnect" class="logo" style="max-width:120px;margin:0 auto 1rem auto;display:block;" />
+        <button id="logoutBtn" style="margin-bottom:1.5rem;">Logout</button>
+        <form id="petCreateForm" enctype="multipart/form-data">
+            <label for="name">Nome:</label>
+            <input type="text" id="name" name="name" required><br>
+            <label for="species">Espécie:</label>
+            <input type="text" id="species" name="species" required><br>
+            <label for="breed">Raça:</label>
+            <input type="text" id="breed" name="breed"><br>
+            <label for="age">Idade:</label>
+            <input type="number" id="age" name="age"><br>
+            <label for="photo">Foto:</label>
+            <input type="file" id="photo" name="photo" accept="image/*"><br>
+            <button type="submit">Cadastrar pet</button>
+        </form>
+    </div>
+</html>

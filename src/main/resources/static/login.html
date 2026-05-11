@@ -16,17 +16,17 @@
       <section id="section-login">
         <h2>Login</h2>
         <img src="img/Logo_PetConnect.png" alt="PetConnect" class="logo" />
-        <div id="div-login">
-          <input type="email" id="email" placeholder="Email" />
-          <input type="password" id="senha" placeholder="Senha" />
+        <form id="form-login">
+          <input type="email" id="email" placeholder="Email" required />
+          <input type="password" id="senha" placeholder="Senha" required />
           <p id="recuperarSenha">
             <a href="#" id="link-recuperarSenha">Recuperar senha</a>
           </p>
-          <button id="btnLogin">Entrar</button>
+          <button id="btnLogin" type="submit">Entrar</button>
           <p id="opcaoCadastro">
-            Não tem conta? <a href="#" id="link-cadastro">Cadastre-se</a>
+            Não tem conta? <a href="register.html" id="link-cadastro">Cadastre-se</a>
           </p>
-        </div>
+        </form>
       </section>
     </div>
 

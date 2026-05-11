@@ -29,18 +29,33 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
-                
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()))
-
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/pets/**").permitAll()
-                        .anyRequest().authenticated()
+                    .requestMatchers(
+                        "/auth/**",
+                        "/h2-console/**",
+                        "/pets/**",
+                        "/login.html",
+                        "/register.html",
+                        "/petSitterHome.html",
+                        "/petOwnerHome.html",
+                        "/style.css",
+                        "/auth.js",
+                        "/petSitterProfileCreate.js",
+                        "/petOwnerProfileCreate.js",
+                        "/petOwner.js",
+                        "/petSitter.js",
+                        "/register.js",
+                        "/favicon.ico",
+                        "/img/**",
+                        "/users/**",
+                        "/js/**", "/images/**", "/img/**", "/*.js", "/*.css", "/*.html",
+                        "/"
+                       
+                    ).permitAll()
+                    .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -49,9 +64,10 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://127.0.0.1:5500"));
+        config.addAllowedOriginPattern("*"); // Permite todas as origens
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
@@ -68,3 +84,4 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 }
+

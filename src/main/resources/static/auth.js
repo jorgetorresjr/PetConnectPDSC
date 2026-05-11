@@ -5,27 +5,67 @@ function mostrar(id) {
   document.getElementById(id).classList.remove("hidden");
 }
 
-document.getElementById("link-cadastro").addEventListener("click", () => mostrar("section-cadastro"));
-document.getElementById("link-login").addEventListener("click", () => mostrar("section-login"));
+function setupLogoutButton() {
+  const btn = document.getElementById('logoutBtn');
+  if (btn) {
+    btn.onclick = function() {
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
+    };
+  }
+}
 
-document.getElementById("btnLogin").addEventListener("click", async () => {
-  const body = {
-    email: document.getElementById("email").value,
-    senha: document.getElementById("senha").value
-  };
+const linkCadastro = document.getElementById("link-cadastro");
+if (linkCadastro) {
+  linkCadastro.addEventListener("click", () => mostrar("section-cadastro"));
+}
+const linkLogin = document.getElementById("link-login");
+if (linkLogin) {
+  linkLogin.addEventListener("click", () => mostrar("section-login"));
+}
 
-  const response = await fetch(`${BASE_URL}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
-
-  if (response.ok) {
-    const data = await response.json();
-    localStorage.setItem("token", data.token);
-    mostrar("section-home");
-  } else {
-    alert("Email ou senha incorretos.");
+const formLogin = document.getElementById("form-login");
+if (formLogin) formLogin.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  console.log("[Login] Submit acionado");
+  const email = document.getElementById("email").value.trim();
+  const senha = document.getElementById("senha").value;
+  if (!email || !senha) {
+    alert("Preencha email e senha.");
+    return;
+  }
+  const body = { email, senha };
+  console.log("[Login] Enviando:", body);
+  try {
+    const response = await fetch(`${BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    console.log("[Login] Status:", response.status);
+    if (response.ok) {
+      const data = await response.json();
+      console.log("[Login] Token recebido:", data.token);
+      localStorage.setItem("token", data.token);
+      // Decodifica o token JWT para extrair o tipo de usuário
+      const payload = JSON.parse(atob(data.token.split('.')[1]));
+      const role = payload.role || payload.authorities?.[0] || "";
+      console.log("[Login] Role extraído:", role);
+      if (role === "PO") {
+        window.location.href = "petOwnerHome.html";
+      } else if (role === "PS") {
+        window.location.href = "petSitterHome.html";
+      } else {
+        window.location.href = "index.html";
+      }
+    } else {
+      const erro = await response.text();
+      console.error("[Login] Erro backend:", erro);
+      alert("Email ou senha incorretos.");
+    }
+  } catch (err) {
+    console.error("[Login] Erro JS:", err);
+    alert("Erro ao tentar login. Veja o console.");
   }
 });
 
@@ -68,3 +108,5 @@ window.addEventListener("load", () => {
     mostrar("section-home");
   }
 });
+
+window.addEventListener('DOMContentLoaded', setupLogoutButton);

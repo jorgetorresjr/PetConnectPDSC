@@ -1,13 +1,14 @@
 package com.PetConnect.controllers;
 
+import com.PetConnect.DTOs.PetDTO;
 import com.PetConnect.entities.Pet;
-import com.PetConnect.entities.DTOs.PetDTO;
 import com.PetConnect.repositories.PetOwnerRepository;
 import com.PetConnect.repositories.PetRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/pets")
@@ -19,25 +20,38 @@ public class PetController {
     @Autowired
     private PetOwnerRepository petOwnerRepository;
 
-    @PostMapping("/register")
-    public ResponseEntity<?> registerPet(@RequestBody @Valid PetDTO data) {
-        // Busca o dono no banco para garantir que ele existe
-        var owner = petOwnerRepository.findById(data.ownerId());
-        
-        if (owner.isEmpty()) {
+
+    @PostMapping
+    public ResponseEntity<?> createPet(
+            @RequestParam String name,
+            @RequestParam String species,
+            @RequestParam(required = false) String breed,
+            @RequestParam(required = false) Integer age,
+            @RequestParam(required = false) String observations,
+            @RequestParam(required = false) MultipartFile photo
+    ) {
+        // Busca o dono autenticado
+        org.springframework.security.core.Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        java.util.Optional<com.PetConnect.entities.PetOwner> ownerOpt = petOwnerRepository.findByEmail(email);
+        if (ownerOpt.isEmpty()) {
             return ResponseEntity.badRequest().body("Dono não encontrado.");
         }
-
-        Pet novoPet = new Pet();
-        novoPet.setNome(data.nome());
-        novoPet.setEspecie(data.especie());
-        novoPet.setRaca(data.raca());
-        novoPet.setIdade(data.idade());
-        novoPet.setObservacoes(data.observacoes());
-        novoPet.setOwner(owner.get()); // Faz a ligação entre Pet e Dono
-
-        petRepository.save(novoPet);
-
+        com.PetConnect.entities.PetOwner owner = ownerOpt.get();
+        Pet pet = new Pet();
+        pet.setNome(name);
+        pet.setEspecie(species);
+        pet.setRaca(breed);
+        pet.setIdade(age);
+        pet.setObservacoes(observations);
+        pet.setOwner(owner);
+        try {
+            if (photo != null && !photo.isEmpty()) {
+                pet.setPhoto(photo.getBytes());
+            }
+        } catch (Exception ignored) {}
+        petRepository.save(pet);
         return ResponseEntity.ok().build();
     }
+
 }

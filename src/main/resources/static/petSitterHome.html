@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>PetConnect - Pet Sitter Home</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Bem-vindo(a), Pet Sitter!</h2>
+        <img src="img/Logo_PetConnect.png" alt="PetConnect" class="logo" style="max-width:120px;margin:0 auto 1rem auto;display:block;" />
+        <button id="logoutBtn" style="margin-bottom:1.5rem;">Logout</button>
+        <button id="criarPerfilBtn">Criar perfil</button>
+    </div>
+    <script src="petSitterHome.js" defer></script>
+    <script src="petSitterProfileStatus.js" defer></script>
+    <script src="auth.js" defer></script>
+    <script>if (typeof setupLogoutButton === 'function') setupLogoutButton();</script>
+</body>
+</html>

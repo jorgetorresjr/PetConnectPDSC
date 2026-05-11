@@ -1,4 +1,4 @@
-package com.PetConnect.entities.DTOs;
+package com.PetConnect.DTOs;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

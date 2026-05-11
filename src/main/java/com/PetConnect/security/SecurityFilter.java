@@ -1,7 +1,7 @@
 package com.PetConnect.security;
 
-import com.PetConnect.repositories.TokenExpiradoRepository;
-import com.PetConnect.repositories.UsuarioRepository;
+import com.PetConnect.repositories.ExpiredTokenRepository;
+import com.PetConnect.repositories.UserRepository;
 import com.PetConnect.services.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,9 +22,9 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Autowired
     private TokenService tokenService;
     @Autowired
-    private UsuarioRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    private TokenExpiradoRepository tokenExpiradoRepository;
+    private ExpiredTokenRepository tokenExpiradoRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -33,7 +33,7 @@ public class SecurityFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String uri = request.getRequestURI();
-        if (uri.startsWith("/auth/")) {
+        if (uri.startsWith("/auth/") || uri.equals("/users/register")) {
             filterChain.doFilter(request, response);
             return;
         }

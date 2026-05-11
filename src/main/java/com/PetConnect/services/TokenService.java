@@ -21,11 +21,15 @@ public class TokenService {
     public String generateToken(UserDetails user) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
+            String role = "USER";
+            if (user instanceof com.PetConnect.entities.User u) {
+                String disc = u.getDiscriminator();
+                if (disc != null) role = disc;
+            }
             String token = JWT.create()
                     .withIssuer("auth-api")
                     .withSubject(user.getUsername())
-                    .withClaim("role", user.getAuthorities().stream()
-                            .findFirst().orElseThrow().getAuthority())
+                    .withClaim("role", role)
                     .withExpiresAt(getTokenExpiryDate())
                     .sign(algorithm);
 

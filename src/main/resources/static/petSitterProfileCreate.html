@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Criar perfil de pet sitter</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="petSitterProfileCreate.js" defer></script>
+    <script src="auth.js" defer></script>
+    <script>if (typeof setupLogoutButton === 'function') setupLogoutButton();</script>
+</head>
+<body>
+    <div class="container">
+        <h2>Criar Perfil de Pet Sitter</h2>
+        <img src="img/Logo_PetConnect.png" alt="PetConnect" class="logo" style="max-width:120px;margin:0 auto 1rem auto;display:block;" />
+        <button id="logoutBtn" style="margin-bottom:1.5rem;">Logout</button>
+        <form id="petSitterProfileForm" enctype="multipart/form-data">
+            <label for="specialty">Especialidade:</label>
+            <input type="text" id="specialty" name="specialty" required><br>
+            <label for="certificates">Certificados:</label>
+            <input type="text" id="certificates" name="certificates"><br>
+            <label>Serviços oferecidos:</label>
+            <div id="servicesCheckboxes">
+                <label><input type="checkbox" name="services" value="Passeio"> Passeio</label>
+                <label><input type="checkbox" name="services" value="Hospedagem"> Hospedagem</label>
+                <label><input type="checkbox" name="services" value="Creche"> Creche</label>
+                <label><input type="checkbox" name="services" value="Banho"> Banho</label>
+                <label><input type="checkbox" name="services" value="Tosa"> Tosa</label>
+                <label><input type="checkbox" name="services" value="Adestramento"> Adestramento</label>
+            </div>
+            <div id="servicePrices"></div>
+            <label>Disponibilidade:</label>
+            <div id="availabilitySelector">
+                <div>
+                    <label>Dias da semana:</label><br>
+                    <input type="checkbox" name="dias" value="Segunda">Segunda
+                    <input type="checkbox" name="dias" value="Terça">Terça
+                    <input type="checkbox" name="dias" value="Quarta">Quarta
+                    <input type="checkbox" name="dias" value="Quinta">Quinta
+                    <input type="checkbox" name="dias" value="Sexta">Sexta
+                    <input type="checkbox" name="dias" value="Sábado">Sábado
+                    <input type="checkbox" name="dias" value="Domingo">Domingo
+                </div>
+                <div>
+                    <label for="horarioInicio">Horário início:</label>
+                    <input type="time" id="horarioInicio" name="horarioInicio">
+                    <label for="horarioFim">Horário fim:</label>
+                    <input type="time" id="horarioFim" name="horarioFim">
+                </div>
+            </div>
+            <label for="photo">Foto:</label>
+            <input type="file" id="photo" name="photo" accept="image/*"><br>
+            <button type="submit">Criar Perfil</button>
+        </form>
+    </div>
+</body>
+</html>

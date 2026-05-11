@@ -15,26 +15,26 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class Endereco {
+public class Address {
 
     @NotBlank
     @Size(max = 150)
     @Column(name = "END_TXT_LOGRADOURO", length = 150, nullable = false)
-    private String logradouro;
+    private String street;
 
     @NotBlank
     @Size(max = 150)
     @Column(name = "END_TXT_BAIRRO", length = 150, nullable = false)
-    private String bairro;
+    private String neighborhood;
 
     @NotNull
     @Positive
     @Column(name = "END_NUMERO", nullable = false)
-    private Integer numero;
+    private Integer number;
 
     @Size(max = 30)
     @Column(name = "END_TXT_COMPLEMENTO", length = 30)
-    private String complemento;
+    private String complement;
 
     @NotBlank
     @Pattern(
@@ -47,10 +47,10 @@ public class Endereco {
     @NotBlank
     @Size(min = 2, max = 50)
     @Column(name = "END_TXT_CIDADE", length = 50, nullable = false)
-    private String cidade;
+    private String city;
 
     @NotBlank
     @Size(min = 2, max = 2)
     @Column(name = "END_TXT_ESTADO", length = 2, nullable = false)
-    private String estado;
+    private String state;
 }

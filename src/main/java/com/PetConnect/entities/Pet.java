@@ -85,4 +85,16 @@ public class Pet {
 		this.owner = owner;
 	}
 
+	@Lob
+	@Column(name = "IMG_FOTO", nullable = true, columnDefinition = "BLOB")
+	private byte[] photo;
+
+	public byte[] getPhoto() {
+		return photo;
+	}
+
+	public void setPhoto(byte[] photo) {
+		this.photo = photo;
+	}
+
 }
