@@ -33,6 +33,8 @@ public class SecurityFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String uri = request.getRequestURI();
+        System.out.println(">>> URI recebida: " + uri);
+
         if (uri.startsWith("/auth/")) {
             filterChain.doFilter(request, response);
             return;

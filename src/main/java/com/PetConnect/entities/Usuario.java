@@ -4,8 +4,12 @@ import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.br.CPF;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +22,7 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "DISC_USUARIO",
         discriminatorType = DiscriminatorType.STRING, length = 2)
-public abstract class Usuario {
+public abstract class Usuario implements UserDetails {
 
     @Id
     @Column(name = "ID")
@@ -42,7 +46,7 @@ public abstract class Usuario {
     @Column(name = "TXT_LOGIN")
     protected String login;
 
-    @Pattern(regexp = "^[A-Z][a-z]+$", message = "{exemplo.jpa.Usuario.nome}")
+    @Pattern(regexp = "^[A-ZÀ-Ú][a-zà-ú]+(\\s[A-ZÀ-Ú][a-zà-ú]+)*$", message = "{exemplo.jpa.Usuario.nome}")
     @NotBlank
     @Column(name = "TXT_NOME")
     protected String nome;
@@ -159,4 +163,38 @@ public abstract class Usuario {
         this.dataNascimento = dataNascimento;
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+
+    @Override
+    public String getPassword() {
+        return senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
