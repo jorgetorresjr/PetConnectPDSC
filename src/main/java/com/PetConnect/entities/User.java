@@ -81,7 +81,7 @@ public abstract class User implements UserDetails {
     @Column(name = "TXT_LOGIN")
     protected String login;
 
-    @Pattern(regexp = "^[A-Z][a-z]+$", message = "{exemplo.jpa.Usuario.nome}")
+    @Pattern(regexp = "^[A-Z][a-z]+( [A-Z][a-z]+)*$", message = "{exemplo.jpa.Usuario.nome}")
     @NotBlank
     @Column(name = "TXT_NOME")
     protected String name;

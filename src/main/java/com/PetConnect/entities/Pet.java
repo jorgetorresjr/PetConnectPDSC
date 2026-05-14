@@ -16,11 +16,16 @@ public class Pet {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private String nome;
-	private String especie;
-	private String raca;
-	private Integer idade;
-	private String observacoes;
+	@Column(name = "NOME", nullable = false)
+	private String name;
+	@Column(name = "ESPECIE", nullable = false)
+	private String specie;
+	@Column(name = "RACA", nullable = false)
+	private String breed;
+	@Column(name = "IDADE", nullable = false)
+	private Integer age;
+	@Column(name = "OBSERVACOES")
+	private String observations;
 
 	// Relacionamento: Muitos pets para um dono (PetOwner)
 	@ManyToOne
@@ -37,44 +42,44 @@ public class Pet {
 		this.id = id;
 	}
 
-	public String getNome() {
-		return nome;
+	public String getName() {
+		return name;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setName(String nome) {
+		this.name = nome;
 	}
 
-	public String getEspecie() {
-		return especie;
+	public String getSpecie() {
+		return specie;
 	}
 
-	public void setEspecie(String especie) {
-		this.especie = especie;
+	public void setSpecie(String specie) {
+		this.specie = specie;
 	}
 
-	public String getRaca() {
-		return raca;
+	public String getBreed() {
+		return breed;
 	}
 
-	public void setRaca(String raca) {
-		this.raca = raca;
+	public void setBreed(String breed) {
+		this.breed = breed;
 	}
 
-	public Integer getIdade() {
-		return idade;
+	public Integer getAge() {
+		return age;
 	}
 
-	public void setIdade(Integer idade) {
-		this.idade = idade;
+	public void setAge(Integer age) {
+		this.age = age;
 	}
 
-	public String getObservacoes() {
-		return observacoes;
+	public String getObservations() {
+		return observations;
 	}
 
-	public void setObservacoes(String observacoes) {
-		this.observacoes = observacoes;
+	public void setObservations(String observations) {
+		this.observations = observations;
 	}
 
 	public PetOwner getOwner() {

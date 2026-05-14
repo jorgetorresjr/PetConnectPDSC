@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cadastrar Pet</title>
+    <title>Cadastrar pet</title>
     <link rel="stylesheet" href="style.css">
     <script src="petCreate.js" defer></script>
     <script src="auth.js" defer></script>
@@ -16,14 +16,16 @@
         <form id="petCreateForm" enctype="multipart/form-data">
             <label for="name">Nome:</label>
             <input type="text" id="name" name="name" required><br>
-            <label for="species">Espécie:</label>
-            <input type="text" id="species" name="species" required><br>
+            <label for="specie">Espécie:</label>
+            <input type="text" id="specie" name="specie" required><br>
             <label for="breed">Raça:</label>
             <input type="text" id="breed" name="breed"><br>
             <label for="age">Idade:</label>
             <input type="number" id="age" name="age"><br>
             <label for="photo">Foto:</label>
             <input type="file" id="photo" name="photo" accept="image/*"><br>
+            <label for="observations">Observações:</label>
+            <textarea id="observations" name="observations" rows="3" style="width:100%;"></textarea><br>
             <button type="submit">Cadastrar pet</button>
         </form>
     </div>

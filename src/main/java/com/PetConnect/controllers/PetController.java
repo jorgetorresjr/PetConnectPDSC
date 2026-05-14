@@ -24,7 +24,7 @@ public class PetController {
     @PostMapping
     public ResponseEntity<?> createPet(
             @RequestParam String name,
-            @RequestParam String species,
+            @RequestParam String specie,
             @RequestParam(required = false) String breed,
             @RequestParam(required = false) Integer age,
             @RequestParam(required = false) String observations,
@@ -39,11 +39,11 @@ public class PetController {
         }
         com.PetConnect.entities.PetOwner owner = ownerOpt.get();
         Pet pet = new Pet();
-        pet.setNome(name);
-        pet.setEspecie(species);
-        pet.setRaca(breed);
-        pet.setIdade(age);
-        pet.setObservacoes(observations);
+        pet.setName(name);
+        pet.setSpecie(specie);
+        pet.setBreed(breed);
+        pet.setAge(age);
+        pet.setObservations(observations);
         pet.setOwner(owner);
         try {
             if (photo != null && !photo.isEmpty()) {
