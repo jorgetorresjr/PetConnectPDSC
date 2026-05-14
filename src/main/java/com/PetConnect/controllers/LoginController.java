@@ -6,8 +6,10 @@ import java.time.ZoneOffset;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -34,76 +36,87 @@ import jakarta.validation.Valid;
 @RequestMapping("/auth")
 @RestController
 public class LoginController {
-	@Autowired
-	private AuthenticationManager authenticationManager;
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	TokenService tokenService;
-	@Autowired
-	private ExpiredTokenRepository expiredTokenRepository;
 
-	@PostMapping("/login")
-	       public ResponseEntity<?> login(@RequestBody @Valid LoginDTO login) {
-		       var usernamePassword = new UsernamePasswordAuthenticationToken(login.getEmail(), login.getSenha());
-		       var authentication = this.authenticationManager.authenticate(usernamePassword);
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-		       var token = tokenService.generateToken((UserDetails) authentication.getPrincipal());
+    @Autowired
+    private UsuarioRepository userRepository;
 
-		       return ResponseEntity.ok(new LoginResponseDTO(token));
-	       }
+    @Autowired
+    TokenService tokenService;
 
-	@PostMapping("/logout")
-	public ResponseEntity<Map<String, String>> logout(HttpServletRequest request) {
-		String authHeader = request.getHeader("Authorization");
+    @Autowired
+    private TokenExpiradoRepository tokenExpiradoRepository;
 
-		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-			return ResponseEntity.badRequest()
-					.body(Map.of("error", "Token não encontrado no cabeçalho."));
-		}
+    @PostMapping("/login")
+    public ResponseEntity login(@RequestBody @Valid LoginDTO login) {
+        try {
+            var usernamePassword = new UsernamePasswordAuthenticationToken(login.email(), login.senha());
+            var authentication = this.authenticationManager.authenticate(usernamePassword);
+            var token = tokenService.generateToken((UserDetails) authentication.getPrincipal());
+            return ResponseEntity.ok(new LoginResponseDTO(token));
+        } catch (BadCredentialsException e) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("Email ou senha incorretos");
+        }
+    }
 
-		String token = authHeader.substring(7);
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, String>> logout(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
 
-		   if (expiredTokenRepository.existsByToken(token)) {
-			   return ResponseEntity.ok(Map.of("message", "Sessão já encerrada."));
-		   }
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Token não encontrado no cabeçalho."));
+        }
 
-		   Instant expiresAtInstant = tokenService.extractExpiration(token);
+        String token = authHeader.substring(7);
 
-		   LocalDateTime expiresAt = expiresAtInstant
-				   .atZone(ZoneOffset.of("-03:00"))
-				   .toLocalDateTime();
+        if (tokenExpiradoRepository.existsByToken(token)) {
+            return ResponseEntity.ok(Map.of("message", "Sessão já encerrada."));
+        }
 
-		   expiredTokenRepository.save(new ExpiredToken(token, expiresAt));
+        Instant expiresAtInstant = tokenService.extractExpiration(token);
+        LocalDateTime expiresAt = expiresAtInstant
+                .atZone(ZoneOffset.of("-03:00"))
+                .toLocalDateTime();
 
-		   return ResponseEntity.ok(Map.of("message", "Logout realizado com sucesso."));
-	}
+        tokenExpiradoRepository.save(new TokenExpirado(token, expiresAt));
+        return ResponseEntity.ok(Map.of("message", "Logout realizado com sucesso."));
+    }
 
-		@PostMapping("/register")
-		public ResponseEntity<?> register(@RequestBody @Valid RegisterDTO registerDTO) {
-			       if (userRepository.findByEmail(registerDTO.email()).isPresent()) {
-				       return ResponseEntity.badRequest().body("Email already registered");
-			       }
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody @Valid CadastroDTO cadastro) {
 
-			       String encryptedPassword = new BCryptPasswordEncoder().encode(registerDTO.password());
-			       User newUser;
-			       if ("PO".equals(registerDTO.role())) {
-				       newUser = new PetOwner();
-			       } else if ("PS".equals(registerDTO.role())) {
-				       newUser = new PetSitter();
-			       } else {
-				       return ResponseEntity.badRequest().body("Invalid role.");
-			       }
-			       newUser.setName(registerDTO.name());
-			       newUser.setEmail(registerDTO.email());
-			       newUser.setPassword(encryptedPassword);
-			       newUser.setCpf(registerDTO.cpf());
-			       newUser.setLogin(registerDTO.email() != null ? registerDTO.email() : registerDTO.email());
-			       newUser.setAddress(registerDTO.address());
-			       newUser.setPhone(registerDTO.phone());
-			       newUser.setBirthDate(registerDTO.birthDate());
-			       userRepository.save(newUser);
-			return ResponseEntity.ok().build();
-	}
+        if (userRepository.findByEmail(cadastro.email()).isPresent()) {
+            return ResponseEntity.badRequest().body("Email já cadastrado");
+        }
+
+        String encryptedPassword = new BCryptPasswordEncoder().encode(cadastro.senha());
+
+        Usuario user;
+        // Lógica de Perfil (Polimorfismo)
+        if (cadastro.role() == UserRole.PET_SITTER) {
+            user = new PetSitter();
+        } else if (cadastro.role() == UserRole.PET_OWNER) {
+            user = new PetOwner();
+        } else {
+            return ResponseEntity.badRequest().body("Role inválida.");
+        }
+
+        user.setNome(cadastro.nome());
+        user.setEmail(cadastro.email());
+        user.setSenha(encryptedPassword);
+        user.setCpf(cadastro.cpf());
+        user.setLogin(cadastro.login() != null ? cadastro.login() : cadastro.email());
+        user.setEndereco(cadastro.endereco());
+        user.setTelefone(cadastro.telefone()); 
+        user.setDataNascimento(cadastro.dataNascimento());
+
+        userRepository.save(user);
+
+        return ResponseEntity.ok().body("Usuário cadastrado com sucesso como " + cadastro.role());
+    }
 }
-
