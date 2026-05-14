@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class Servico {
+public class Service {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

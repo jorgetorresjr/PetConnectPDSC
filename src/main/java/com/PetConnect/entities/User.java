@@ -22,6 +22,20 @@ import org.springframework.security.core.userdetails.UserDetails;
 @DiscriminatorColumn(name = "DISC_USUARIO",
         discriminatorType = DiscriminatorType.STRING, length = 2)
 public abstract class User implements UserDetails {
+        @ManyToMany
+        @JoinTable(
+            name = "user_services",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_id")
+        )
+        private List<Service> services = new ArrayList<>();
+
+        public List<Service> getServices() {
+            return services;
+        }
+        public void setServices(List<Service> services) {
+            this.services = services;
+        }
     // Implementação dos métodos da interface UserDetails
     @Override
     public String getUsername() {

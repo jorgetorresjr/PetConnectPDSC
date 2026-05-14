@@ -42,23 +42,19 @@ public class SecurityConfiguration {
                         "/auth/**",
                         "/h2-console/**",
                         "/pets/**",
-                        "/login.html",
-                        "/register.html",
+                        "/html/login.html",
+                        "/html/register.html",
+                        "/html/home.html",
+                        "/html/**",
                         "/petSitterHome.html",
                         "/petOwnerHome.html",
-                        "/style.css",
-                        "/auth.js",
-                        "/petSitterProfileCreate.js",
-                        "/petOwnerProfileCreate.js",
-                        "/petOwner.js",
-                        "/petSitter.js",
-                        "/register.js",
-                        "/favicon.ico",
+                        "/css/**",
+                        "/js/**",
                         "/img/**",
+                        "/favicon.ico",
                         "/users/**",
-                        "/js/**", "/images/**", "/img/**", "/*.js", "/*.css", "/*.html",
+                        "/*.js", "/*.css", "/*.html",
                         "/"
-                       
                     ).permitAll()
                     .anyRequest().authenticated()
                 )

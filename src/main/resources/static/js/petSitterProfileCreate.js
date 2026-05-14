@@ -42,7 +42,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (form) {
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
-            const formData = new FormData(form);
+                        const formData = new FormData(form);
+                        // Formatar CEP se existir campo de CEP
+                        const cepInput = form.querySelector('[name="cep"], [id*="cep"]');
+                        if (cepInput) {
+                            let rawCep = cepInput.value.replace(/\D/g, "");
+                            if (rawCep.length === 8) rawCep = rawCep.replace(/(\d{5})(\d{3})/, "$1-$2");
+                            formData.set(cepInput.name || 'cep', rawCep);
+                        }
 
             // Serviços selecionados
             const selectedServices = Array.from(document.querySelectorAll('#servicesCheckboxes input[type="checkbox"]:checked')).map(cb => cb.value);

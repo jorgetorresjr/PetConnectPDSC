@@ -33,7 +33,34 @@ public class SecurityFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String uri = request.getRequestURI();
-        if (uri.startsWith("/auth/") || uri.equals("/users/register")) {
+        // Rotas públicas conforme SecurityConfiguration
+        if (
+            uri.startsWith("/auth/") ||
+            uri.startsWith("/h2-console/") ||
+            uri.startsWith("/pets/") ||
+            uri.equals("/html/login.html") ||
+            uri.equals("/html/register.html") ||
+            uri.equals("/html/home.html") ||
+            uri.startsWith("/html/") ||
+            uri.equals("/petSitterHome.html") ||
+            uri.equals("/petOwnerHome.html") ||
+            uri.equals("/style.css") ||
+            uri.equals("/auth.js") ||
+            uri.equals("/petSitterProfileCreate.js") ||
+            uri.equals("/petOwnerProfileCreate.js") ||
+            uri.equals("/petOwner.js") ||
+            uri.equals("/petSitter.js") ||
+            uri.equals("/register.js") ||
+            uri.equals("/favicon.ico") ||
+            uri.startsWith("/img/") ||
+            uri.startsWith("/users/") ||
+            uri.startsWith("/js/") ||
+            uri.startsWith("/images/") ||
+            uri.endsWith(".js") ||
+            uri.endsWith(".css") ||
+            uri.endsWith(".html") ||
+            uri.equals("/")
+        ) {
             filterChain.doFilter(request, response);
             return;
         }

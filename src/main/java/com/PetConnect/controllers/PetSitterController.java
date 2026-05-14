@@ -3,6 +3,8 @@ package com.PetConnect.controllers;
 import com.PetConnect.entities.PetSitter;
 import com.PetConnect.repositories.PetSitterRepository;
 import com.PetConnect.repositories.UserRepository;
+import com.PetConnect.repositories.ServiceRepository;
+import com.PetConnect.entities.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,18 +23,20 @@ public class PetSitterController {
     private PetSitterRepository petSitterRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ServiceRepository serviceRepository;
 
     @PutMapping("/profile")
-        public ResponseEntity<PetSitter> updateProfile(
-            @RequestParam String specialty,
-            @RequestParam(required = false) String certificates,
-            @RequestParam(required = false) String services,
-            @RequestParam(required = false) String dias,
-            @RequestParam(required = false) String horarioInicio,
-            @RequestParam(required = false) String horarioFim,
-            @RequestParam(required = false) String servicePrices,
-            @RequestParam(required = false) MultipartFile photo
-        ) throws IOException {
+    public ResponseEntity<PetSitter> updateProfile(
+        @RequestParam String specialty,
+        @RequestParam(required = false) String certificates,
+        @RequestParam(required = false) List<Long> servicesIds,
+        @RequestParam(required = false) String dias,
+        @RequestParam(required = false) String horarioInicio,
+        @RequestParam(required = false) String horarioFim,
+        @RequestParam(required = false) String servicePrices,
+        @RequestParam(required = false) MultipartFile photo
+    ) throws IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         var userOpt = userRepository.findByEmail(email);
@@ -58,8 +62,11 @@ public class PetSitterController {
         }
         petSitter.setSpecialty(specialty);
         petSitter.setCertificates(certificates);
-        // Incrementos: serviços, preços e disponibilidade
-        if (services != null) petSitter.setServices(services);
+        // Associar serviços selecionados
+        if (servicesIds != null && !servicesIds.isEmpty()) {
+            List<Service> selectedServices = serviceRepository.findAllById(servicesIds);
+            petSitter.setServices(selectedServices);
+        }
         // Só salva disponibilidade se houver dias marcados e horários preenchidos
         if (dias != null && !dias.equals("[]") && horarioInicio != null && !horarioInicio.isBlank() && horarioFim != null && !horarioFim.isBlank()) {
             String disponibilidade = dias + "|" + horarioInicio + "-" + horarioFim;

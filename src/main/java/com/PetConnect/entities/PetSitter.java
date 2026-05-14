@@ -1,8 +1,6 @@
 package com.PetConnect.entities;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Column;
-import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 
 import jakarta.persistence.Entity;
@@ -25,14 +23,10 @@ public class PetSitter extends User {
   @Column(name = "DISPONIBILIDADE")   
   private String availability;
 
-  @Column(name = "SERVICOS", columnDefinition = "TEXT")
-  private String services; // JSON array de serviços
 
   @Column(name = "PRECOS_SERVICOS", columnDefinition = "TEXT")
   private String servicePrices; // JSON {servico: preco}
 
-  public String getServices() { return services; }
-  public void setServices(String services) { this.services = services; }
   public String getServicePrices() { return servicePrices; }
   public void setServicePrices(String servicePrices) { this.servicePrices = servicePrices; }
 

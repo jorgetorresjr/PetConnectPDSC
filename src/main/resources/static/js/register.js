@@ -4,7 +4,9 @@ const BASE_URL = "http://localhost:8080";
 document.getElementById("form-register").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  // Monta o objeto Address
+  // Monta o objeto Address com CEP formatado
+  let rawCep = document.getElementById("addressCep").value.replace(/\D/g, "");
+  if (rawCep.length === 8) rawCep = rawCep.replace(/(\d{5})(\d{3})/, "$1-$2");
   const address = {
     street: document.getElementById("addressStreet").value,
     number: document.getElementById("addressNumber").value,
@@ -12,7 +14,7 @@ document.getElementById("form-register").addEventListener("submit", async (e) =>
     neighborhood: document.getElementById("addressNeighborhood").value,
     city: document.getElementById("addressCity").value,
     state: document.getElementById("addressState").value,
-    cep: document.getElementById("addressCep").value
+    cep: rawCep
   };
 
   const body = {
