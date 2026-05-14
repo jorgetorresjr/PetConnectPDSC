@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
+    
     const token = localStorage.getItem('token');
     try {
       const response = await fetch('/pets', {
