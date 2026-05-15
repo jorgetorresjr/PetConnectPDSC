@@ -5,14 +5,14 @@
     <title>Criar Perfil de Tutor</title>
     <link rel="stylesheet" href="../css/style.css">
     <script src="petOwnerProfileCreate.js" defer></script>
-    <script src="auth.js" defer></script>
+    <script src="../js/auth.js" defer></script>
     <script>if (typeof setupLogoutButton === 'function') setupLogoutButton();</script>
 </head>
 <body>
     <div class="container">
         <h2>Criar Perfil de Tutor</h2>
         <img src="../img/Logo_PetConnect.png" alt="PetConnect" class="logo" />
-        <button id="logoutBtn">Logout</button>
+        <button id="btnLogout">Logout</button>
         <form id="petOwnerProfileForm" enctype="multipart/form-data">
             <label for="photo">Foto:</label>
             <input type="file" id="photo" name="photo" accept="image/*"><br>

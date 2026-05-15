@@ -5,14 +5,14 @@
     <title>Cadastrar pet</title>
     <link rel="stylesheet" href="../css/style.css">
     <script src="../js/petCreate.js" defer></script>
-    <script src="auth.js" defer></script>
+    <script src="../js/auth.js" defer></script>
     <script>if (typeof setupLogoutButton === 'function') setupLogoutButton();</script>
 </head>
 <body>
     <div class="container">
         <h2>Cadastrar Pet</h2>
         <img src="../img/Logo_PetConnect.png" alt="PetConnect" class="logo" />
-        <button id="logoutBtn">Logout</button>
+        <button id="btnLogout">Logout</button>
         <form id="petCreateForm" enctype="multipart/form-data">
             <label for="name">Nome:</label>
             <input type="text" id="name" name="name" required><br>
