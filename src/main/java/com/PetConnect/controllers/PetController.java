@@ -25,8 +25,8 @@ public class PetController {
     public ResponseEntity<?> createPet(
             @RequestParam String name,
             @RequestParam String specie,
-            @RequestParam(required = false) String breed,
-            @RequestParam(required = false) Integer age,
+            @RequestParam String breed,
+            @RequestParam Integer age,
             @RequestParam(required = false) String observations,
             @RequestParam(required = false) MultipartFile photo
     ) {
@@ -53,5 +53,5 @@ public class PetController {
         petRepository.save(pet);
         return ResponseEntity.ok().build();
     }
-
+    
 }
