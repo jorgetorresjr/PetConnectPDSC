@@ -1,33 +1,32 @@
 document.addEventListener('DOMContentLoaded', function() {
-
-    // Serviços e preços dinâmicos com checkboxes
     const servicesCheckboxesDiv = document.getElementById('servicesCheckboxes');
     const servicePricesDiv = document.getElementById('servicePrices');
     if (servicesCheckboxesDiv && servicePricesDiv) {
         servicesCheckboxesDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => {
             cb.addEventListener('change', function() {
-                const service = cb.value;
-                const priceFieldId = `preco_field_${service}`;
+                const serviceName = cb.getAttribute('data-name');
+                const priceFieldId = `preco_field_${serviceName}`;
+                
                 if (cb.checked) {
-                    // Adiciona campo de preço
                     const label = document.createElement('label');
-                    label.textContent = `Preço para ${service}:`;
-                    label.setAttribute('for', `preco_${service}`);
-                    label.id = `label_${service}`;
+                    label.textContent = `Preço para ${serviceName}:`;
+                    label.setAttribute('for', `preco_${serviceName}`);
+                    label.id = `label_${serviceName}`;
+                    
                     const input = document.createElement('input');
                     input.type = 'number';
-                    input.name = `preco_${service}`;
-                    input.id = `preco_${service}`;
+                    input.name = `preco_${serviceName}`;
+                    input.id = `preco_${serviceName}`;
                     input.min = 0;
                     input.step = 0.01;
                     input.required = true;
+                    
                     const div = document.createElement('div');
                     div.id = priceFieldId;
                     div.appendChild(label);
                     div.appendChild(input);
                     servicePricesDiv.appendChild(div);
                 } else {
-                    // Remove campo de preço
                     const div = document.getElementById(priceFieldId);
                     if (div) servicePricesDiv.removeChild(div);
                 }
@@ -35,35 +34,38 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Garante que o botão de logout funcione
     if (typeof setupLogoutButton === 'function') setupLogoutButton();
 
     const form = document.getElementById('petSitterProfileForm');
     if (form) {
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
-                        const formData = new FormData(form);
-                        // Formatar CEP se existir campo de CEP
-                        const cepInput = form.querySelector('[name="cep"], [id*="cep"]');
-                        if (cepInput) {
-                            let rawCep = cepInput.value.replace(/\D/g, "");
-                            if (rawCep.length === 8) rawCep = rawCep.replace(/(\d{5})(\d{3})/, "$1-$2");
-                            formData.set(cepInput.name || 'cep', rawCep);
-                        }
+            const formData = new FormData(form);
+            
+            const cepInput = form.querySelector('[name="cep"], [id*="cep"]');
+            if (cepInput) {
+                let rawCep = cepInput.value.replace(/\D/g, "");
+                if (rawCep.length === 8) rawCep = rawCep.replace(/(\d{5})(\d{3})/, "$1-$2");
+                formData.set(cepInput.name || 'cep', rawCep);
+            }
 
-            // Serviços selecionados
-            const selectedServices = Array.from(document.querySelectorAll('#servicesCheckboxes input[type="checkbox"]:checked')).map(cb => cb.value);
-            formData.set('services', JSON.stringify(selectedServices));
-            // Preços dos serviços como JSON
+            const selectedCheckboxes = Array.from(document.querySelectorAll('#servicesCheckboxes input[type="checkbox"]:checked'));
+
+            // Correção: enviando como 'servicesIds' para o Java entender
+            selectedCheckboxes.forEach(cb => {
+                formData.append('servicesIds', cb.value); 
+            });
+
             const servicePrices = {};
-            selectedServices.forEach(service => {
-                const priceInput = form.querySelector(`[name='preco_${service}']`);
+            selectedCheckboxes.forEach(cb => {
+                const serviceName = cb.getAttribute('data-name');
+                const priceInput = form.querySelector(`[name='preco_${serviceName}']`);
                 if (priceInput) {
-                    servicePrices[service] = priceInput.value;
+                    servicePrices[serviceName] = priceInput.value;
                 }
             });
             formData.set('servicePrices', JSON.stringify(servicePrices));
-            // Disponibilidade
+
             const dias = Array.from(document.querySelectorAll('input[name="dias"]:checked')).map(cb => cb.value);
             const horarioInicio = document.getElementById('horarioInicio').value;
             const horarioFim = document.getElementById('horarioFim').value;
@@ -73,21 +75,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const token = localStorage.getItem('token');
             try {
-                const response = await fetch('/petsitters/profile', {
+                // Forçando a URL absoluta para evitar erro de rota no navegador
+                const response = await fetch('http://localhost:8080/petsitters/profile', {
                     method: 'PUT',
                     headers: token ? { 'Authorization': 'Bearer ' + token } : {},
                     body: formData
                 });
+                
                 if (response.ok) {
                     alert('Perfil criado com sucesso!');
                     form.reset();
                     servicePricesDiv.innerHTML = '';
                 } else {
                     const error = await response.text();
-                    alert('Error: ' + error);
+                    alert('Atenção:\n' + error);
                 }
             } catch (err) {
-                alert('Error: ' + err);
+                alert('Erro de conexão com o servidor.');
             }
         });
     }

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Criar perfil de pet sitter</title>
     <link rel="stylesheet" href="../css/style.css">
-    <script src="petSitterProfileCreate.js" defer></script>
+    <script src="../js/petSitterProfileCreate.js" defer></script>
     <script src="auth.js" defer></script>
     <script>if (typeof setupLogoutButton === 'function') setupLogoutButton();</script>
 </head>
@@ -19,14 +19,15 @@
             <label for="certificates">Certificados:</label>
             <input type="text" id="certificates" name="certificates"><br>
             <label>Serviços oferecidos:</label>
-            <div id="servicesCheckboxes">
-                <label><input type="checkbox" name="services" value="Passeio"> Passeio</label>
-                <label><input type="checkbox" name="services" value="Hospedagem"> Hospedagem</label>
-                <label><input type="checkbox" name="services" value="Creche"> Creche</label>
-                <label><input type="checkbox" name="services" value="Banho"> Banho</label>
-                <label><input type="checkbox" name="services" value="Tosa"> Tosa</label>
-                <label><input type="checkbox" name="services" value="Adestramento"> Adestramento</label>
-            </div>
+			<div id="servicesCheckboxes">
+			    <label><input type="checkbox" name="services" value="1" data-name="Passeio"> Passeio</label>
+			    <label><input type="checkbox" name="services" value="2" data-name="Hospedagem"> Hospedagem</label>
+			    <label><input type="checkbox" name="services" value="3" data-name="Creche"> Creche</label>
+			    <label><input type="checkbox" name="services" value="4" data-name="Banho"> Banho</label>
+			    <label><input type="checkbox" name="services" value="5" data-name="Tosa"> Tosa</label>
+			    <label><input type="checkbox" name="services" value="6" data-name="Adestramento"> Adestramento</label>
+			</div>
+			
             <div id="servicePrices"></div>
             <label>Disponibilidade:</label>
             <div id="availabilitySelector">
