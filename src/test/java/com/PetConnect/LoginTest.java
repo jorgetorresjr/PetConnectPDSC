@@ -56,10 +56,10 @@ public class LoginTest {
         driver.findElement(By.id("btnLogin"))
                 .click();
 
-        wait.until(ExpectedConditions.urlContains("home"));
+        wait.until(ExpectedConditions.urlContains("http://127.0.0.1:5500/src/main/resources/static/html/petSitterHome.html"));
 
         Assertions.assertTrue(
-                driver.getCurrentUrl().contains("home")
+                driver.getCurrentUrl().contains("http://127.0.0.1:5500/src/main/resources/static/html/petSitterHome.html")
         );
     }
 
