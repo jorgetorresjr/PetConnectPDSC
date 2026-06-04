@@ -18,19 +18,17 @@ if (linkLogin) {
 }
 
 
-function redirecionarPorRole(token) {
+async function redirecionarPorPerfil(token) {
   try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    const role = payload.role || payload.authorities?.[0] || "";
-    console.log("[Login] Role extraído:", role);
-    if (role === "PO") {
-      window.location.href = "petOwnerHome.html";
-    } else if (role === "PS") {
-      window.location.href = "petSitterHome.html";
-    } else {
-      window.location.href = "home.html";
-    }
-  } catch {
+    const response = await fetch(`${BASE_URL}/users/me`, {
+      headers: { "Authorization": "Bearer " + token }
+    });
+    if (!response.ok) { window.location.href = "home.html"; return; }
+    const user = await response.json();
+    if (user.discriminator === "PO") window.location.href = "petOwnerHome.html";
+    else if (user.discriminator === "PS") window.location.href = "petSitterHome.html";
+    else window.location.href = "home.html";
+  } catch (err) {
     window.location.href = "home.html";
   }
 }
@@ -61,7 +59,7 @@ async function realizarLogin(email, senha, erroEl) {
       const data = await response.json();
       console.log("[Login] Token recebido:", data.token);
       localStorage.setItem("token", data.token);
-      redirecionarPorRole(data.token);
+      await redirecionarPorPerfil(data.token);
     } else {
       const mensagem = await response.text();
       console.error("[Login] Erro backend:", mensagem);
