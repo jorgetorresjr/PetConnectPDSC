@@ -53,4 +53,11 @@ public class PetOwnerController {
         PetOwner saved = petOwnerRepository.save(petOwner);
         return ResponseEntity.ok(saved);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PetOwner> getById(@PathVariable Long id) {
+        return petOwnerRepository.findById(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
 }

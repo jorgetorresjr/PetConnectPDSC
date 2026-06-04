@@ -53,5 +53,12 @@ public class PetController {
         petRepository.save(pet);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Pet> getById(@PathVariable Long id) {
+        return petRepository.findById(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
     
 }

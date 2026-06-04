@@ -12,7 +12,12 @@ document.addEventListener('DOMContentLoaded', function() {
       window.location.href = 'petCreate.html';
     };
   }
-
+  const buscarPetSitterBtn = document.getElementById("buscarPetSitterBtn");
+  if (buscarPetSitterBtn) {
+    buscarPetSitterBtn.onclick = function() {
+        window.location.href = "petSitterSearch.html";
+    };
+  }
   // Garante que o botão de logout funcione em todos os contextos
   if (typeof setupLogoutButton === 'function') setupLogoutButton();
 });

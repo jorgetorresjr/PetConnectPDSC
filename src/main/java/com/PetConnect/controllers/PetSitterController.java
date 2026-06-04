@@ -99,4 +99,16 @@ public class PetSitterController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<PetSitter>> filterByService(@RequestParam Long serviceId) {
+        return ResponseEntity.ok(petSitterRepository.findByServiceId(serviceId));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PetSitter> getById(@PathVariable Long id) {
+        return petSitterRepository.findById(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
 }
