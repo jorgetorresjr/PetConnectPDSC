@@ -273,6 +273,23 @@ if (formAg) {
     const ps = await res.json();
     petSitterAtual = ps;
 
+    if (btnSolicitar && token) {
+      try {
+        const meuPerfilRes = await fetch(BASE_URL + "/petsitters/me", {
+          headers: { Authorization: "Bearer " + token }
+        });
+
+        if (meuPerfilRes.ok) {
+          const meuPerfil = await meuPerfilRes.json();
+          if (meuPerfil && String(meuPerfil.id) === String(ps.id)) {
+            btnSolicitar.style.display = "none";
+          }
+        }
+      } catch (e) {
+        // mantém o botão visível se não for possível comparar o perfil
+      }
+    }
+
     if (perfilDiv) {
       perfilDiv.innerHTML =
         "<p><strong>Nome:</strong> " + (ps.name || "-") + "</p>" +
