@@ -41,7 +41,7 @@ public class SecurityConfiguration {
                     .requestMatchers(
                         "/auth/**",
                         "/h2-console/**",
-                        "/pets/**",
+                        //"/pets/**",
                         "/html/login.html",
                         "/html/register.html",
                         "/html/home.html",

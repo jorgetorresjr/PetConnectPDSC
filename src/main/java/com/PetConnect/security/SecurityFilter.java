@@ -37,7 +37,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (
             uri.startsWith("/auth/") ||
             uri.startsWith("/h2-console/") ||
-            uri.startsWith("/pets/") ||
+            //uri.startsWith("/pets/") ||
             uri.equals("/html/login.html") ||
             uri.equals("/html/register.html") ||
             uri.equals("/html/home.html") ||
