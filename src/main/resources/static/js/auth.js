@@ -20,15 +20,22 @@ if (linkLogin) {
 
 async function redirecionarPorPerfil(token) {
   try {
-    const response = await fetch(`${BASE_URL}/users/me`, {
-      headers: { "Authorization": "Bearer " + token }
-    });
-    if (!response.ok) { window.location.href = "home.html"; return; }
-    const user = await response.json();
-    if (user.discriminator === "PO") window.location.href = "petOwnerHome.html";
-    else if (user.discriminator === "PS") window.location.href = "petSitterHome.html";
-    else window.location.href = "home.html";
+    // Abre o token e extrai os dados que o TokenService do Java guardou
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    const role = payload.role; 
+    
+    console.log("[Login] Role extraído do token:", role);
+
+    // Faz o redirecionamento exato
+    if (role === "PO") {
+      window.location.href = "petOwnerHome.html";
+    } else if (role === "PS") {
+      window.location.href = "petSitterHome.html";
+    } else {
+      window.location.href = "home.html";
+    }
   } catch (err) {
+    console.error("Erro ao ler o token:", err);
     window.location.href = "home.html";
   }
 }

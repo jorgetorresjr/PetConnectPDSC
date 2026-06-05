@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch('/petowners/profile', {
+      const response = await fetch('http://localhost:8080/petowners/profile', {
         method: 'PUT',
         headers: token ? { 'Authorization': 'Bearer ' + token } : {},
         body: formData
