@@ -1,18 +1,18 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const servicesCheckboxesDiv = document.getElementById('servicesCheckboxes');
     const servicePricesDiv = document.getElementById('servicePrices');
     if (servicesCheckboxesDiv && servicePricesDiv) {
         servicesCheckboxesDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-            cb.addEventListener('change', function() {
+            cb.addEventListener('change', function () {
                 const serviceName = cb.getAttribute('data-name');
                 const priceFieldId = `preco_field_${serviceName}`;
-                
+
                 if (cb.checked) {
                     const label = document.createElement('label');
                     label.textContent = `Preço para ${serviceName}:`;
                     label.setAttribute('for', `preco_${serviceName}`);
                     label.id = `label_${serviceName}`;
-                    
+
                     const input = document.createElement('input');
                     input.type = 'number';
                     input.name = `preco_${serviceName}`;
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     input.min = 0;
                     input.step = 0.01;
                     input.required = true;
-                    
+
                     const div = document.createElement('div');
                     div.id = priceFieldId;
                     div.appendChild(label);
@@ -38,10 +38,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const form = document.getElementById('petSitterProfileForm');
     if (form) {
-        form.addEventListener('submit', async function(e) {
+        form.addEventListener('submit', async function (e) {
             e.preventDefault();
             const formData = new FormData(form);
-            
+
             const cepInput = form.querySelector('[name="cep"], [id*="cep"]');
             if (cepInput) {
                 let rawCep = cepInput.value.replace(/\D/g, "");
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Correção: enviando como 'servicesIds' para o Java entender
             selectedCheckboxes.forEach(cb => {
-                formData.append('servicesIds', cb.value); 
+                formData.append('servicesIds', cb.value);
             });
 
             const servicePrices = {};
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     headers: token ? { 'Authorization': 'Bearer ' + token } : {},
                     body: formData
                 });
-                
+
                 if (response.ok) {
                     alert('Perfil criado com sucesso!');
                     form.reset();

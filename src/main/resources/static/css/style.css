@@ -112,3 +112,67 @@ button:hover {
   color: #2c3e50;
   text-decoration: none;
 }
+
+.hidden {
+  display: none !important;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 4rem 1rem 1rem;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 560px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  text-align: left;
+}
+
+.modal-card h3 {
+  margin-bottom: 0.8rem;
+  color: #2c3e50;
+}
+
+.modal-card label {
+  display: block;
+  margin-top: 0.7rem;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.modal-card select,
+.modal-card input[type="date"],
+.modal-card input[type="time"] {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.95rem;
+}
+
+.modal-message {
+  margin-top: 0.75rem;
+  min-height: 1.2rem;
+  font-size: 0.9rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.modal-actions button {
+  width: 100%;
+}

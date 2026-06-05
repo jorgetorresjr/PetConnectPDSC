@@ -61,4 +61,18 @@ public class PetController {
             .orElse(ResponseEntity.notFound().build());
     }
     
+    @GetMapping("/my")
+public ResponseEntity<?> listMyPets() {
+    org.springframework.security.core.Authentication authentication =
+            org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+    String email = authentication.getName();
+
+    java.util.Optional<com.PetConnect.entities.PetOwner> ownerOpt = petOwnerRepository.findByEmail(email);
+    if (ownerOpt.isEmpty()) {
+        return ResponseEntity.status(403).body("Apenas tutor pode visualizar seus pets.");
+    }
+
+    java.util.List<Pet> pets = petRepository.findByOwnerId(ownerOpt.get().getId());
+    return ResponseEntity.ok(pets);
+}
 }

@@ -18,18 +18,20 @@ document.getElementById("btnBuscar").addEventListener("click", async () => {
     const div = document.getElementById("resultados");
     div.innerHTML = "";
 
-    if (sitters.length === 0) {
+    if (!sitters || sitters.length === 0) {
         div.innerHTML = "<p>Nenhum pet sitter encontrado.</p>";
         return;
     }
 
     sitters.forEach(ps => {
         div.innerHTML += `
-            <div style="border:1px solid #ccc; padding:1rem; margin:0.5rem 0; border-radius:8px;">
-                <strong>${ps.name}</strong><br>
-                Especialidade: ${ps.specialty || "-"}<br>
-                Disponibilidade: ${ps.availability || "-"}<br>
-                <button onclick="window.location.href='petSitterProfile.html?id=${ps.id}'">Ver perfil</button>
-            </div>`;
+        <div style="border:1px solid #ccc; padding:1rem; margin:0.5rem 0; border-radius:8px;">
+            <strong>${ps.name}</strong><br>
+            Especialidade: ${ps.specialty || "-"}<br>
+            Disponibilidade: ${ps.availability || "-"}<br>
+            Cidade: ${ps.address?.city || "-"}<br>
+            Bairro: ${ps.address?.neighborhood || "-"}<br>
+            <button onclick="window.location.href='petSitterProfile.html?id=${ps.id}'">Ver perfil</button><br>
+        </div>`;
     });
 });

@@ -41,13 +41,14 @@ public class SecurityConfiguration {
                     .requestMatchers(
                         "/auth/**",
                         "/h2-console/**",
-                        "/pets/**",
+                        //"/pets/**",
                         "/html/login.html",
                         "/html/register.html",
                         "/html/home.html",
                         "/html/**",
                         "/petSitterHome.html",
                         "/petOwnerHome.html",
+                        "/appointments/**",
                         "/css/**",
                         "/js/**",
                         "/img/**",
@@ -67,7 +68,7 @@ public class SecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOriginPattern("*"); // Permite todas as origens
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 

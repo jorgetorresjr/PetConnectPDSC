@@ -9,8 +9,38 @@
     <div class="container">
         <h2>Perfil do Pet Sitter</h2>
         <div id="perfilPetSitter"><p>Carregando...</p></div>
+         <button id="btnSolicitarAgendamento">Solicitar agendamento</button>
         <button id="btnVoltar">Voltar</button>
     </div>
+
+    <div id="agendamentoModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h3>Solicitar agendamento</h3>
+            <form id="agendamentoForm">
+                <input type="hidden" id="agPetSitterId">
+
+                <label for="agServiceId">Serviço</label>
+                <select id="agServiceId" required></select>
+
+                <label for="agPetId">Pet</label>
+                <select id="agPetId" required></select>
+
+                <label for="agDate">Data</label>
+                <input id="agDate" type="date" required>
+
+                <label for="agTime">Horário</label>
+                <input id="agTime" type="time" required>
+
+                <p id="agendamentoMsg" class="modal-message"></p>
+
+                <div class="modal-actions">
+                    <button type="submit">Confirmar solicitação</button>
+                    <button type="button" id="btnFecharModal">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
     <script src="../js/petSitterProfile.js" defer></script>
     <script src="../js/auth.js" defer></script>
 </body>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>PetConnect - Histórico de Agendamentos</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Histórico de agendamentos</h2>
+        <img src="../img/Logo_PetConnect.png" alt="PetConnect" class="logo" style="max-width:120px;margin:0 auto 1rem auto;display:block;" />
+
+        <button id="btnVoltar" type="button">Voltar</button>
+        <button id="btnLogout" type="button" style="margin-bottom:1rem;">Logout</button>
+
+        <p id="historicoMsg">Carregando histórico...</p>
+        <div id="historicoLista"></div>
+    </div>
+
+    <script src="../js/petSitterAppointmentHistory.js" defer></script>
+    <script src="../js/auth.js" defer></script>
+    <script>if (typeof setupLogoutButton === 'function') setupLogoutButton();</script>
+</body>
+</html>
