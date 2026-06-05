@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Criar perfil de pet sitter</title>
@@ -8,6 +9,7 @@
     <script src="../js/auth.js" defer></script>
     <script>if (typeof setupLogoutButton === 'function') setupLogoutButton();</script>
 </head>
+
 <body>
     <div class="container">
         <h2>Criar Perfil de Pet Sitter</h2>
@@ -19,15 +21,15 @@
             <label for="certificates">Certificados:</label>
             <input type="text" id="certificates" name="certificates"><br>
             <label>Serviços oferecidos:</label>
-			<div id="servicesCheckboxes">
-			    <label><input type="checkbox" name="services" value="1" data-name="Passeio"> Passeio</label>
-			    <label><input type="checkbox" name="services" value="2" data-name="Hospedagem"> Hospedagem</label>
-			    <label><input type="checkbox" name="services" value="3" data-name="Creche"> Creche</label>
-			    <label><input type="checkbox" name="services" value="4" data-name="Banho"> Banho</label>
-			    <label><input type="checkbox" name="services" value="5" data-name="Tosa"> Tosa</label>
-			    <label><input type="checkbox" name="services" value="6" data-name="Adestramento"> Adestramento</label>
-			</div>
-			
+            <div id="servicesCheckboxes">
+                <label><input type="checkbox" name="services" value="1" data-name="Passeio"> Passeio</label>
+                <label><input type="checkbox" name="services" value="2" data-name="Hospedagem"> Hospedagem</label>
+                <label><input type="checkbox" name="services" value="3" data-name="Creche"> Creche</label>
+                <label><input type="checkbox" name="services" value="4" data-name="Banho"> Banho</label>
+                <label><input type="checkbox" name="services" value="5" data-name="Tosa"> Tosa</label>
+                <label><input type="checkbox" name="services" value="6" data-name="Adestramento"> Adestramento</label>
+            </div>
+
             <div id="servicePrices"></div>
             <label>Disponibilidade:</label>
             <div id="availabilitySelector">
@@ -54,4 +56,5 @@
         </form>
     </div>
 </body>
+
 </html>

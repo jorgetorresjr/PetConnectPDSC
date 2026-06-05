@@ -16,10 +16,10 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       if (response.ok) {
-  alert("Pet criado com sucesso!");
-  form.reset();
-  window.location.href = "petOwnerHome.html";
-  }else {
+        alert("Pet criado com sucesso!");
+        form.reset();
+        window.location.href = "petOwnerHome.html";
+      } else {
         const error = await response.text();
         alert("Error: " + error);
       }
