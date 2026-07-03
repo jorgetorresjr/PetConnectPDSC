@@ -21,6 +21,19 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById("btnToggleBusca")?.addEventListener("click", () => {
         document.getElementById("secaoBuscaSitter").classList.toggle("hidden");
     });
+
+    document.getElementById('btnBuscarSitter')?.addEventListener('click', () => {
+        const termo = document.getElementById('buscaSitter')?.value.trim();
+        if (termo) {
+            window.location.href = `petSitterSearch.html?search=${encodeURIComponent(termo)}`;
+        } else {
+            window.location.href = 'petSitterSearch.html';
+        }
+    });
+
+    document.getElementById('btnLimparBusca')?.addEventListener('click', () => {
+        document.getElementById('buscaSitter').value = '';
+    });
     
     const modalHistorico = document.getElementById('modalHistorico');
     document.getElementById('btnAbrirHistorico')?.addEventListener('click', () => {

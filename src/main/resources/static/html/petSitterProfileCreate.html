@@ -23,10 +23,10 @@
         <form id="petSitterProfileForm" enctype="multipart/form-data">
             
             <label>Especialidade Principal:</label>
-            <input type="text" id="specialty" name="specialty" required placeholder="Ex: Especialista em cães de grande porte">
+            <input type="text" id="specialty" name="specialty" required placeholder="Ex: Especialista em cães de grande porte" maxlength="100">
             
             <label>Certificados / Formações:</label>
-            <input type="text" id="certificates" name="certificates" placeholder="Ex: Curso de Primeiros Socorros">
+            <input type="text" id="certificates" name="certificates" placeholder="Ex: Curso de Primeiros Socorros" maxlength="200">
             
             <label>Serviços Oferecidos:</label>
             <div id="servicesCheckboxes" class="checkbox-grid">
@@ -38,7 +38,9 @@
                 <label><input type="checkbox" name="services" value="6" data-name="Adestramento"> Adestramento</label>
             </div>
             
-            <div id="servicePrices" class="mb-25"></div>
+            <div id="servicePrices" class="mb-25">
+                <small style="color: #666; display: block; margin-top: 10px;"></small>
+            </div>
 
             <label>Dias da semana disponíveis:</label>
             <div class="checkbox-grid">
@@ -72,5 +74,15 @@
 
 <script src="../js/petSitterProfileCreate.js" defer></script>
 <script src="../js/auth.js" defer></script>
+<script>
+  // Validação de preço máximo nos inputs dinâmicos
+  document.addEventListener('change', function(e) {
+    if (e.target.type === 'number' && e.target.classList.contains('price-input')) {
+      if (e.target.value && parseFloat(e.target.value) > 999999.99) {
+        e.target.value = '999999.99';
+      }
+    }
+  });
+</script>
 </body>
 </html>

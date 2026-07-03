@@ -18,8 +18,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     input.name = `preco_${serviceName}`;
                     input.id = `preco_${serviceName}`;
                     input.min = 0;
+                    input.max = 999999.99;
                     input.step = 0.01;
                     input.required = true;
+                    input.placeholder = 'R$ 0.00';
+
+                    // Validação em tempo real
+                    input.addEventListener('input', function() {
+                        if (this.value && parseFloat(this.value) > 999999.99) {
+                            this.value = 999999.99;
+                        }
+                    });
 
                     const div = document.createElement('div');
                     div.id = priceFieldId;
@@ -84,8 +93,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (response.ok) {
                     alert('Perfil criado com sucesso!');
-                    form.reset();
-                    servicePricesDiv.innerHTML = '';
+                    //form.reset();
+                   // servicePricesDiv.innerHTML = '';
+                     window.location.href = '../html/petSitterHome.html';
                 } else {
                     const error = await response.text();
                     alert('Atenção:\n' + error);

@@ -85,8 +85,11 @@ public class PetSitterController {
     }
 
     @GetMapping
-    public List<PetSitter> listAll() {
-        return petSitterRepository.findAll();
+    public List<PetSitter> listAll(@RequestParam(required = false) String search) {
+        if (search == null || search.trim().isEmpty()) {
+            return petSitterRepository.findAll();
+        }
+        return petSitterRepository.findByServiceNameOrDescription(search);
     }
 
     @GetMapping("/me")

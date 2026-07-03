@@ -13,4 +13,7 @@ public interface PetSitterRepository extends JpaRepository<PetSitter, Long> {
     @Query("SELECT ps FROM PetSitter ps JOIN ps.services s WHERE s.id = :serviceId")
     List<PetSitter> findByServiceId(@Param("serviceId") Long serviceId);
 
+    @Query("SELECT DISTINCT ps FROM PetSitter ps JOIN ps.services s WHERE LOWER(s.nome) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(s.descricao) LIKE LOWER(CONCAT('%', :search, '%'))")
+    List<PetSitter> findByServiceNameOrDescription(@Param("search") String search);
+
 }
