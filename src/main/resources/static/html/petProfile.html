@@ -2,16 +2,36 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Perfil do Pet</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil do Pet - PetConnect</title>
+    <link rel="stylesheet" href="../css/style.css?v=12">
 </head>
 <body>
-    <div class="container">
-        <h2>Perfil do Pet</h2>
-        <div id="perfilPet"><p>Carregando...</p></div>
-        <button id="btnVoltar">Voltar</button>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <img src="../img/Logo_PetConnect.png" alt="Logo">
+            <span>PetConnect</span>
+        </div>
+        <div class="nav-user-zone">
+            <button id="btnLogout" class="btn-danger">Sair</button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <button onclick="history.back()" class="btn-back">⬅ Voltar</button>
+        
+        <h1 class="page-title">Perfil do Pet</h1>
+        <p class="page-subtitle">Detalhes sobre o seu pet.</p>
+
+        <div id="perfilPet" class="content-card">
+            <p>Carregando...</p>
+        </div>
     </div>
+
     <script src="../js/petProfile.js" defer></script>
     <script src="../js/auth.js" defer></script>
+    <script>
+        setTimeout(() => { if (typeof setupLogoutButton === 'function') setupLogoutButton(); }, 500);
+    </script>
 </body>
 </html>

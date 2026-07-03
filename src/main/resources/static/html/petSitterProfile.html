@@ -2,46 +2,71 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Perfil Pet Sitter</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil do Cuidador - PetConnect</title>
+    <link rel="stylesheet" href="../css/style.css?v=12">
 </head>
-<body>
-    <div class="container">
-        <h2>Perfil do Pet Sitter</h2>
-        <div id="perfilPetSitter"><p>Carregando...</p></div>
-         <button id="btnSolicitarAgendamento">Solicitar agendamento</button>
-        <button id="btnVoltar">Voltar</button>
+<body class="petsitter-theme">
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <img src="../img/Logo_PetConnect.png" alt="PetConnect">
+            <span>PetConnect</span>
+        </div>
+        <button id="btnLogout" class="btn-danger">Sair</button>
+    </nav>
+
+    <div class="dashboard-container">
+        <button onclick="history.back()" class="btn-back">⬅ Voltar</button>
+        
+        <h1 class="page-title">Perfil do Pet Sitter</h1>
+        <p class="page-subtitle">Conheça os serviços deste profissional.</p>
+
+        <div id="perfilPetSitter" class="content-card">
+            <div style="text-align:center; padding:40px;">Carregando informações...</div>
+        </div>
+
+        <button id="btnSolicitarAgendamento" class="btn-block">Solicitar Agendamento</button>
     </div>
 
     <div id="agendamentoModal" class="modal-overlay hidden">
         <div class="modal-card">
-            <h3>Solicitar agendamento</h3>
+            <span id="btnFecharX" class="fechar">&times;</span>
+            <h2 class="mb-25">Solicitar Agendamento</h2>
+            
             <form id="agendamentoForm">
                 <input type="hidden" id="agPetSitterId">
-
-                <label for="agServiceId">Serviço</label>
+                
+                <label>Serviço</label>
                 <select id="agServiceId" required></select>
-
-                <label for="agPetId">Pet</label>
-                <select id="agPetId" required></select>
-
-                <label for="agDate">Data</label>
-                <input id="agDate" type="date" required>
-
-                <label for="agTime">Horário</label>
-                <input id="agTime" type="time" required>
-
-                <p id="agendamentoMsg" class="modal-message"></p>
-
-                <div class="modal-actions">
-                    <button type="submit">Confirmar solicitação</button>
-                    <button type="button" id="btnFecharModal">Cancelar</button>
+                
+                <label>Pet</label>
+                <select id="agPetId" required>
+                    <option value="">Selecione seu pet</option>
+                </select>
+                
+                <div class="form-grid">
+                    <div>
+                        <label>Data</label>
+                        <input type="date" id="agDate" required>
+                    </div>
+                    <div>
+                        <label>Horário</label>
+                        <input type="time" id="agTime" required>
+                    </div>
+                </div>
+                
+                <p id="agendamentoMsg" class="page-subtitle" style="color:var(--danger);"></p>
+                
+                <div class="actions-group">
+                    <button type="submit">Confirmar Agendamento</button>
+                    <button type="button" id="btnFecharModal" class="btn-secondary">Cancelar</button>
                 </div>
             </form>
         </div>
     </div>
-    
-    <script src="../js/petSitterProfile.js" defer></script>
+
     <script src="../js/auth.js" defer></script>
+    <script src="../js/petSitterProfile.js" defer></script>
 </body>
 </html>

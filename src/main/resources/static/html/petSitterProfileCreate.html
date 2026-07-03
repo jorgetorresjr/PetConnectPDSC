@@ -1,27 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Criar perfil de pet sitter</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <script src="../js/petSitterProfileCreate.js" defer></script>
-    <script src="../js/auth.js" defer></script>
-    <script>if (typeof setupLogoutButton === 'function') setupLogoutButton();</script>
+    <title>Perfil Profissional - PetConnect</title>
+    <link rel="stylesheet" href="../css/style.css?v=12">
 </head>
+<body class="petsitter-theme">
 
-<body>
-    <div class="container">
-        <h2>Criar Perfil de Pet Sitter</h2>
-        <img src="../img/Logo_PetConnect.png" alt="PetConnect" class="logo" />
-        <button id="btnLogout">Logout</button>
+<nav class="navbar">
+    <div class="nav-brand">
+        <img src="../img/Logo_PetConnect.png">
+        <span>PetConnect</span>
+    </div>
+    <button id="btnLogout" class="btn-danger">Sair</button>
+</nav>
+
+<div class="dashboard-container">
+    <button onclick="history.back()" class="btn-back">⬅ Voltar</button>
+
+    <div class="form-card">
+        <h2 class="mb-25" style="text-align: center;">Complete seu Perfil Profissional</h2>
         <form id="petSitterProfileForm" enctype="multipart/form-data">
-            <label for="specialty">Especialidade:</label>
-            <input type="text" id="specialty" name="specialty" required><br>
-            <label for="certificates">Certificados:</label>
-            <input type="text" id="certificates" name="certificates"><br>
-            <label>Serviços oferecidos:</label>
-            <div id="servicesCheckboxes">
+            
+            <label>Especialidade Principal:</label>
+            <input type="text" id="specialty" name="specialty" required placeholder="Ex: Especialista em cães de grande porte">
+            
+            <label>Certificados / Formações:</label>
+            <input type="text" id="certificates" name="certificates" placeholder="Ex: Curso de Primeiros Socorros">
+            
+            <label>Serviços Oferecidos:</label>
+            <div id="servicesCheckboxes" class="checkbox-grid">
                 <label><input type="checkbox" name="services" value="1" data-name="Passeio"> Passeio</label>
                 <label><input type="checkbox" name="services" value="2" data-name="Hospedagem"> Hospedagem</label>
                 <label><input type="checkbox" name="services" value="3" data-name="Creche"> Creche</label>
@@ -29,32 +37,40 @@
                 <label><input type="checkbox" name="services" value="5" data-name="Tosa"> Tosa</label>
                 <label><input type="checkbox" name="services" value="6" data-name="Adestramento"> Adestramento</label>
             </div>
+            
+            <div id="servicePrices" class="mb-25"></div>
 
-            <div id="servicePrices"></div>
-            <label>Disponibilidade:</label>
-            <div id="availabilitySelector">
+            <label>Dias da semana disponíveis:</label>
+            <div class="checkbox-grid">
+                <label><input type="checkbox" name="dias" value="Segunda"> Segunda</label>
+                <label><input type="checkbox" name="dias" value="Terça"> Terça</label>
+                <label><input type="checkbox" name="dias" value="Quarta"> Quarta</label>
+                <label><input type="checkbox" name="dias" value="Quinta"> Quinta</label>
+                <label><input type="checkbox" name="dias" value="Sexta"> Sexta</label>
+                <label><input type="checkbox" name="dias" value="Sábado"> Sábado</label>
+                <label><input type="checkbox" name="dias" value="Domingo"> Domingo</label>
+            </div>
+
+            <div class="form-grid">
                 <div>
-                    <label>Dias da semana:</label><br>
-                    <input type="checkbox" name="dias" value="Segunda">Segunda
-                    <input type="checkbox" name="dias" value="Terça">Terça
-                    <input type="checkbox" name="dias" value="Quarta">Quarta
-                    <input type="checkbox" name="dias" value="Quinta">Quinta
-                    <input type="checkbox" name="dias" value="Sexta">Sexta
-                    <input type="checkbox" name="dias" value="Sábado">Sábado
-                    <input type="checkbox" name="dias" value="Domingo">Domingo
+                    <label>Horário Início:</label>
+                    <input type="time" id="horarioInicio" name="horarioInicio">
                 </div>
                 <div>
-                    <label for="horarioInicio">Horário início:</label>
-                    <input type="time" id="horarioInicio" name="horarioInicio">
-                    <label for="horarioFim">Horário fim:</label>
+                    <label>Horário Fim:</label>
                     <input type="time" id="horarioFim" name="horarioFim">
                 </div>
             </div>
-            <label for="photo">Foto:</label>
-            <input type="file" id="photo" name="photo" accept="image/*"><br>
-            <button type="submit">Criar Perfil</button>
+
+            <label>Foto de Perfil:</label>
+            <input type="file" id="photo" name="photo" accept="image/*">
+            
+            <button type="submit" class="btn-block mt-20">Salvar Perfil</button>
         </form>
     </div>
-</body>
+</div>
 
+<script src="../js/petSitterProfileCreate.js" defer></script>
+<script src="../js/auth.js" defer></script>
+</body>
 </html>

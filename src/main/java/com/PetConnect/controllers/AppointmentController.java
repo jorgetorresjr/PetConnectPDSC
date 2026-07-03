@@ -1,23 +1,5 @@
 package com.PetConnect.controllers;
 
-import com.PetConnect.entities.Appointment;
-import com.PetConnect.entities.Pet;
-import com.PetConnect.entities.PetOwner;
-import com.PetConnect.entities.PetSitter;
-import com.PetConnect.entities.Service;
-import com.PetConnect.entities.User;
-import com.PetConnect.entities.enums.AppointmentStatus;
-import com.PetConnect.repositories.AppointmentRepository;
-import com.PetConnect.repositories.PetOwnerRepository;
-import com.PetConnect.repositories.PetRepository;
-import com.PetConnect.repositories.PetSitterRepository;
-import com.PetConnect.repositories.ServiceRepository;
-import com.PetConnect.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -25,6 +7,31 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.PetConnect.DTOs.CreateAppointmentDTO;
+import com.PetConnect.entities.Appointment;
+import com.PetConnect.entities.Pet;
+import com.PetConnect.entities.PetOwner;
+import com.PetConnect.entities.PetSitter;
+import com.PetConnect.entities.Service;
+import com.PetConnect.entities.enums.AppointmentStatus;
+import com.PetConnect.repositories.AppointmentRepository;
+import com.PetConnect.repositories.PetOwnerRepository;
+import com.PetConnect.repositories.PetRepository;
+import com.PetConnect.repositories.PetSitterRepository;
+import com.PetConnect.repositories.ServiceRepository;
+import com.PetConnect.repositories.UserRepository;
 
 @RestController
 @RequestMapping("/appointments")
@@ -49,13 +56,7 @@ public class AppointmentController {
     private UserRepository userRepository;
 
     @PostMapping
-    public ResponseEntity<?> createAppointment(
-            @RequestParam(required = false) Long petSitterId,
-            @RequestParam(required = false) Long serviceId,
-            @RequestParam(required = false) Long petId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate serviceDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime serviceTime) {
-
+    public ResponseEntity<?> createAppointment(@RequestBody CreateAppointmentDTO dto) {
         String email = org.springframework.security.core.context.SecurityContextHolder
                 .getContext().getAuthentication().getName();
 
@@ -64,40 +65,18 @@ public class AppointmentController {
             return ResponseEntity.status(403).body("Apenas tutor pode solicitar agendamento.");
         }
 
-        if (petSitterId == null) {
-            return ResponseEntity.badRequest().body("Pet sitter é obrigatório.");
-        }
+        // Converte as strings do JSON para os tipos que o Java entende
+        LocalDate serviceDate = LocalDate.parse(dto.getServiceDate());
+        LocalTime serviceTime = LocalTime.parse(dto.getServiceTime());
 
-        if (serviceId == null) {
-            return ResponseEntity.badRequest().body("Serviço é obrigatório.");
-        }
+        Optional<Pet> petOpt = petRepository.findById(dto.getPetId());
+        if (petOpt.isEmpty()) return ResponseEntity.badRequest().body("Pet não encontrado.");
 
-        if (petId == null) {
-            return ResponseEntity.badRequest().body("Selecione um pet para agendar.");
-        }
+        Optional<PetSitter> sitterOpt = petSitterRepository.findById(dto.getPetSitterId());
+        if (sitterOpt.isEmpty()) return ResponseEntity.badRequest().body("Pet sitter não encontrado.");
 
-        if (serviceDate == null) {
-            return ResponseEntity.badRequest().body("Data do serviço é obrigatória.");
-        }
-
-        if (serviceTime == null) {
-            return ResponseEntity.badRequest().body("Horário do serviço é obrigatório.");
-        }
-
-        Optional<Pet> petOpt = petRepository.findById(petId);
-        if (petOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("Pet não encontrado.");
-        }
-
-        Optional<PetSitter> sitterOpt = petSitterRepository.findById(petSitterId);
-        if (sitterOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("Pet sitter não encontrado.");
-        }
-
-        Optional<Service> serviceOpt = serviceRepository.findById(serviceId);
-        if (serviceOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("Serviço não encontrado.");
-        }
+        Optional<Service> serviceOpt = serviceRepository.findById(dto.getServiceId());
+        if (serviceOpt.isEmpty()) return ResponseEntity.badRequest().body("Serviço não encontrado.");
 
         PetOwner owner = ownerOpt.get();
         Pet pet = petOpt.get();
@@ -112,7 +91,7 @@ public class AppointmentController {
                 && sitter.getServices().stream().anyMatch(s -> s.getId().equals(service.getId()));
 
         if (!serviceOffered) {
-            return ResponseEntity.badRequest().body("O serviço selecionado não é oferecido por este pet sitter.");
+            return ResponseEntity.badRequest().body("O serviço selecionado não é oferecido por este profissional.");
         }
 
         LocalDateTime agendamento = LocalDateTime.of(serviceDate, serviceTime);
@@ -132,7 +111,6 @@ public class AppointmentController {
         Appointment saved = appointmentRepository.save(appointment);
         return ResponseEntity.ok(toResponse(saved));
     }
-
     @GetMapping("/petsitter")
     public ResponseEntity<List<Map<String, Object>>> listForPetSitter() {
         String email = org.springframework.security.core.context.SecurityContextHolder

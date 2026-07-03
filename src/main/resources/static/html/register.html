@@ -1,49 +1,61 @@
 <!doctype html>
 <html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cadastro - PetConnect</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap"
-      rel="stylesheet"/>
-    <link rel="stylesheet" href="../css/style.css" />
-  </head>
-  <body id="body-register">
-    <div class="container">
-      <h2>Cadastro</h2>
-      <img src="../img/Logo_PetConnect.png" alt="PetConnect" class="logo" />
-      <form id="form-register">
-          <input type="text" id="name" placeholder="Nome completo" required />
-          <input type="email" id="emailRegister" placeholder="Email" required />
-          <input type="password" id="passwordRegister" placeholder="Senha" required />
-          <input type="text" id="cpfRegister" placeholder="CPF" required maxlength="14" />
-          <input type="date" id="birthDateRegister" placeholder="Data de nascimento" required />
-          <input type="text" id="phoneRegister" placeholder="Telefone" required />
-          <fieldset style="border:none; margin:0; padding:0;">
-            <legend style="font-size:1rem; margin-bottom:0.5rem;">Endereço</legend>
-            <input type="text" id="addressStreet" placeholder="Logradouro" required />
-            <input type="number" id="addressNumber" placeholder="Número" required />
-            <input type="text" id="addressComplement" placeholder="Complemento" />
-            <input type="text" id="addressNeighborhood" placeholder="Bairro" required />
-            <input type="text" id="addressCity" placeholder="Cidade" required />
-            <input type="text" id="addressState" placeholder="Estado (UF)" maxlength="2" required />
-            <input type="text" id="addressCep" placeholder="CEP" required maxlength="9" />
-          </fieldset>
-          <select id="roleRegister" required style="margin-bottom: 1rem;">
-            <option value="" disabled selected>Selecione o perfil</option>
-            <option value="PO">Tutor</option>
-            <option value="PS">Pet Sitter</option>
-          </select>
-          <button id="btnRegister" type="submit">Cadastrar</button>
-          <p id="opcaoLogin">
-            Já tem conta? <a href="login.html" id="link-login">Entrar</a>
-          </p>
-        </form>
-      </section>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro - PetConnect</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+<div class="auth-container" style="max-width: 700px;">
+  <img src="../img/Logo_PetConnect.png" alt="PetConnect" class="logo" />
+  <h1>Criar Conta</h1>
+
+  <form id="form-register">
+    <input type="text" id="name" placeholder="Nome completo" required />
+    
+    <div class="form-grid">
+      <input type="email" id="emailRegister" placeholder="Email" required />
+      <input type="password" id="passwordRegister" placeholder="Senha" required />
+      <input type="text" id="cpfRegister" placeholder="CPF" required maxlength="14" />
+      <input type="date" id="birthDateRegister" placeholder="Data de nascimento" required />
     </div>
-    <script src="../js/register.js"></script>
-  </body>
+    
+    <input type="text" id="phoneRegister" placeholder="Telefone" required />
+    
+    <fieldset style="border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 15px; text-align: left;">
+      <legend style="color: var(--primary); font-weight: bold; padding: 0 10px;">Endereço</legend>
+      <input type="text" id="addressCep" placeholder="CEP" required maxlength="9" />
+      
+      <div class="form-grid">
+        <input type="text" id="addressStreet" placeholder="Logradouro" required />
+        <input type="number" id="addressNumber" placeholder="Número" required />
+        <input type="text" id="addressComplement" placeholder="Complemento" />
+        <input type="text" id="addressNeighborhood" placeholder="Bairro" required />
+        <input type="text" id="addressCity" placeholder="Cidade" required />
+        <input type="text" id="addressState" placeholder="Estado (UF)" maxlength="2" required />
+      </div>
+    </fieldset>
+
+    <select id="roleRegister" required style="margin-bottom: 20px;">
+      <option value="" disabled selected>Selecione o perfil desejado...</option>
+      <option value="PO">🐶 Sou um Tutor (Procuro serviços)</option>
+      <option value="PS">🐱 Sou Pet Sitter (Ofereço serviços)</option>
+    </select>
+
+    <button id="btnRegister" type="submit" class="btn-block">Cadastrar</button>
+  </form>
+
+  <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border);">
+
+  <a href="login.html">Já possuo conta</a>
+</div>
+
+<script src="../js/auth.js"></script>
+<script src="../js/register.js"></script>
+<script>
+    setTimeout(() => { if (typeof setupLogoutButton === 'function') setupLogoutButton(); }, 500);
+</script>
+</body>
 </html>

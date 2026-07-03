@@ -1,5 +1,3 @@
-const BASE_URL = "http://localhost:8080";
-
 document.getElementById("btnVoltar").onclick = () => history.back();
 
 document.getElementById("btnBuscar").addEventListener("click", async () => {
