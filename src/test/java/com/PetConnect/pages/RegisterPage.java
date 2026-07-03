@@ -44,8 +44,8 @@ public class RegisterPage {
     private final By roleSelect = By.id("roleRegister");
     private final By registerButton = By.id("btnRegister");
 
-    private String registeredEmail;
-    private final String registeredPassword = "#Senha123";
+    private static String registeredEmail;
+    private static final String registeredPassword = "#Senha123";
 
 
     public void open() {
@@ -58,10 +58,13 @@ public class RegisterPage {
         );
     }
 
-    public void fillValidForm() {
-        String uniqueEmail = "user" + UUID.randomUUID() + "@email.com";
+    public void fillValidForm(String role) {
+        registeredEmail = "user" + UUID.randomUUID() + "@email.com";
 
-        fillFormWithEmail(uniqueEmail);
+        fillFormWithEmail(registeredEmail);
+
+        Select select = new Select(driver.findElement(roleSelect));
+        select.selectByValue(role);
     }
 
     public void clickRegister() {
@@ -100,7 +103,7 @@ public class RegisterPage {
     public void fillFormWithEmail(String email) {
         driver.findElement(name).sendKeys("Flavio Augusto");
         driver.findElement(emailInput).sendKeys(email);
-        driver.findElement(password).sendKeys("#Senha123");
+        driver.findElement(password).sendKeys(registeredPassword);
         driver.findElement(cpf).sendKeys("529.982.247-25");
         driver.findElement(birthDate).sendKeys("2000-01-01");
         driver.findElement(phone).sendKeys("81999999999");
@@ -111,8 +114,6 @@ public class RegisterPage {
         driver.findElement(city).sendKeys("Recife");
         driver.findElement(state).sendKeys("PE");
         driver.findElement(cep).sendKeys("50000-000");
-        Select role = new Select(driver.findElement(roleSelect));
-        role.selectByValue("PO");
     }
 
     public String getRegisteredEmail() {
@@ -129,13 +130,18 @@ public class RegisterPage {
         registeredEmail = "user" + UUID.randomUUID() + "@email.com";
 
         fillFormWithEmail(registeredEmail);
+
+        Select select = new Select(driver.findElement(roleSelect));
+        select.selectByValue("PO");
+
         clickRegister();
         validateSuccessAlert();
     }
 
     public void fillFormWithExistingEmail() {
-
         fillFormWithEmail(registeredEmail);
+        Select select = new Select(driver.findElement(roleSelect));
+        select.selectByValue("PO");
     }
 
     public void validateEmailAlreadyExistsError() {
