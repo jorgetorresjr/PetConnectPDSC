@@ -1,35 +1,67 @@
-document.getElementById("btnVoltar").onclick = () => history.back();
+const token = localStorage.getItem("token");
 
-document.getElementById("btnBuscar").addEventListener("click", async () => {
-    const serviceId = document.getElementById("servicoFiltro").value;
-    const token = localStorage.getItem("token");
-
-    const url = serviceId
-        ? `${BASE_URL}/petsitters/filter?serviceId=${serviceId}`
-        : `${BASE_URL}/petsitters`;
-
-    const res = await fetch(url, {
-        headers: { "Authorization": "Bearer " + token }
-    });
-
-    const sitters = await res.json();
-    const div = document.getElementById("resultados");
-    div.innerHTML = "";
-
-    if (!sitters || sitters.length === 0) {
-        div.innerHTML = "<p>Nenhum pet sitter encontrado.</p>";
-        return;
+document.addEventListener('DOMContentLoaded', () => {
+    // Capturar termo de busca da URL
+    const params = new URLSearchParams(window.location.search);
+    const termoBusca = params.get('search');
+    
+    if (termoBusca) {
+        document.getElementById('buscaInput').value = termoBusca;
+        buscar(); // Executa busca automaticamente
     }
 
-    sitters.forEach(ps => {
-        div.innerHTML += `
-        <div style="border:1px solid #ccc; padding:1rem; margin:0.5rem 0; border-radius:8px;">
-            <strong>${ps.name}</strong><br>
-            Especialidade: ${ps.specialty || "-"}<br>
-            Disponibilidade: ${ps.availability || "-"}<br>
-            Cidade: ${ps.address?.city || "-"}<br>
-            Bairro: ${ps.address?.neighborhood || "-"}<br>
-            <button onclick="window.location.href='petSitterProfile.html?id=${ps.id}'">Ver perfil</button><br>
-        </div>`;
-    });
+    document.getElementById('btnBuscar').addEventListener('click', buscar);
 });
+
+async function buscar() {
+    const termo = document.getElementById('buscaInput')?.value.trim();
+    const div = document.getElementById('resultados');
+    div.innerHTML = '<p>Buscando...</p>';
+
+    let url = `${BASE_URL}/petsitters`;
+    if (termo) {
+        url += `?search=${encodeURIComponent(termo)}`;
+    }
+
+    try {
+        const res = await fetch(url, {
+            headers: { "Authorization": "Bearer " + token }
+        });
+
+        const sitters = await res.json();
+        div.innerHTML = "";
+
+        if (!sitters || sitters.length === 0) {
+            div.innerHTML = "<p class='page-subtitle'>Nenhum pet sitter encontrado.</p>";
+            return;
+        }
+
+        sitters.forEach(ps => {
+            let precoTexto = "Sob consulta";
+            if (ps.servicePrices) {
+                try {
+                    const precosObj = JSON.parse(ps.servicePrices);
+                    const valores = Object.values(precosObj);
+                    if (valores.length > 0) precoTexto = `R$ ${parseFloat(valores[0]).toFixed(2)} / hora`;
+                } catch (e) {}
+            }
+
+            const card = document.createElement("div");
+            card.className = "content-card";
+            card.innerHTML = `
+                <div>
+                    <h4>${ps.name}</h4>
+                    <p class="mt-8">${ps.specialty || 'Disponível para cuidados'}</p>
+                    <p class="price-tag">${precoTexto}</p>
+                    <p><strong>Cidade:</strong> ${ps.address?.city || "-"}</p>
+                    <p><strong>Bairro:</strong> ${ps.address?.neighborhood || "-"}</p>
+                </div>
+                <button onclick="window.location.href='petSitterProfile.html?id=${ps.id}'">Agendar Serviço</button>
+            `;
+            div.appendChild(card);
+        });
+    } catch (e) {
+        console.error(e);
+        div.innerHTML = '<p class="page-subtitle">Erro ao buscar cuidadores.</p>';
+    }
+}

@@ -5,28 +5,36 @@
     <title>Buscar Cuidadores - PetConnect</title>
     <link rel="stylesheet" href="../css/style.css">
 </head>
-<body class="theme-sitter">
+<body>
     <nav class="navbar">
-        <div class="nav-left"><img src="../img/Logo_PetConnect.png"><span>PetConnect</span></div>
+        <div class="nav-brand">
+            <img src="../img/Logo_PetConnect.png" alt="Logo">
+            <span>PetConnect</span>
+        </div>
         <button id="btnLogout" class="btn-danger">Sair</button>
     </nav>
-    <div class="container">
+
+    <div class="dashboard-container">
         <button onclick="history.back()" class="btn-back">⬅ Voltar</button>
-        <h2>Buscar Pet Sitters</h2>
-        <div class="card" style="margin-bottom: 20px; display: flex; gap: 10px;">
-            <select id="servicoFiltro" style="margin: 0;">
-                <option value="">Todos os serviços</option>
-                <option value="1">Passeio</option>
-                <option value="2">Hospedagem</option>
-            </select>
-            <button id="btnBuscar" style="margin: 0;">Buscar</button>
+        
+        <h2 class="page-title">Buscar Pet Sitters</h2>
+
+        <div class="search-controls" style="margin-bottom: 20px;">
+            <input 
+                type="text" 
+                id="buscaInput" 
+                placeholder="Buscar por serviço ou nome..." 
+                style="flex: 1;">
+            <button id="btnBuscar">Buscar</button>
         </div>
+
         <div id="resultados" class="card-grid"></div>
     </div>
-    <script src="../js/petSitterSearch.js" defer></script>
+
     <script src="../js/auth.js" defer></script>
+    <script src="../js/petSitterSearch.js" defer></script>
     <script>
-    setTimeout(() => { if (typeof setupLogoutButton === 'function') setupLogoutButton(); }, 500);
-</script>
+        setTimeout(() => { if (typeof setupLogoutButton === 'function') setupLogoutButton(); }, 500);
+    </script>
 </body>
 </html>

@@ -1,6 +1,10 @@
 package com.PetConnect.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,94 +16,104 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Pet {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@Column(name = "NOME", nullable = false)
-	private String name;
-	@Column(name = "ESPECIE", nullable = false)
-	private String specie;
-	@Column(name = "RACA", nullable = false)
-	private String breed;
-	@Column(name = "IDADE", nullable = false)
-	private Integer age;
-	@Column(name = "OBSERVACOES")
-	private String observations;
+    @NotBlank(message = "O nome do pet é obrigatório.")
+    @Size(min = 2, max = 100, message = "O nome deve ter entre 2 e 100 caracteres.")
+    @Column(name = "NOME", nullable = false)
+    private String name;
 
-	// Relacionamento: Muitos pets para um dono (PetOwner)
-	@ManyToOne
-	@JoinColumn(name = "owner_id")
-	private PetOwner owner;
+    @NotBlank(message = "A espécie é obrigatória.")
+    @Size(min = 2, max = 50, message = "A espécie deve ter entre 2 e 50 caracteres.")
+    @Column(name = "ESPECIE", nullable = false)
+    private String specie;
 
-	// getters e setters
+    @NotBlank(message = "A raça é obrigatória.")
+    @Size(min = 2, max = 50, message = "A raça deve ter entre 2 e 50 caracteres.")
+    @Column(name = "RACA", nullable = false)
+    private String breed;
 
-	public Long getId() {
-		return id;
-	}
+    @NotNull(message = "A idade é obrigatória.")
+    @Positive(message = "A idade deve ser um número positivo.")
+    @Column(name = "IDADE", nullable = false)
+    private Integer age;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Size(max = 500, message = "As observações devem ter no máximo 500 caracteres.")
+    @Column(name = "OBSERVACOES")
+    private String observations;
 
-	public String getName() {
-		return name;
-	}
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private PetOwner owner;
 
-	public void setName(String nome) {
-		this.name = nome;
-	}
+    @Lob
+    @Column(name = "IMG_FOTO", nullable = true, columnDefinition = "BLOB")
+    private byte[] photo;
 
-	public String getSpecie() {
-		return specie;
-	}
+    // Getters e setters
+    public Long getId() {
+        return id;
+    }
 
-	public void setSpecie(String specie) {
-		this.specie = specie;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getBreed() {
-		return breed;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setBreed(String breed) {
-		this.breed = breed;
-	}
+    public void setName(String nome) {
+        this.name = nome;
+    }
 
-	public Integer getAge() {
-		return age;
-	}
+    public String getSpecie() {
+        return specie;
+    }
 
-	public void setAge(Integer age) {
-		this.age = age;
-	}
+    public void setSpecie(String specie) {
+        this.specie = specie;
+    }
 
-	public String getObservations() {
-		return observations;
-	}
+    public String getBreed() {
+        return breed;
+    }
 
-	public void setObservations(String observations) {
-		this.observations = observations;
-	}
+    public void setBreed(String breed) {
+        this.breed = breed;
+    }
 
-	public PetOwner getOwner() {
-		return owner;
-	}
+    public Integer getAge() {
+        return age;
+    }
 
-	public void setOwner(PetOwner owner) {
-		this.owner = owner;
-	}
+    public void setAge(Integer age) {
+        this.age = age;
+    }
 
-	@Lob
-	@Column(name = "IMG_FOTO", nullable = true, columnDefinition = "BLOB")
-	private byte[] photo;
+    public String getObservations() {
+        return observations;
+    }
 
-	public byte[] getPhoto() {
-		return photo;
-	}
+    public void setObservations(String observations) {
+        this.observations = observations;
+    }
 
-	public void setPhoto(byte[] photo) {
-		this.photo = photo;
-	}
+    public PetOwner getOwner() {
+        return owner;
+    }
 
+    public void setOwner(PetOwner owner) {
+        this.owner = owner;
+    }
+
+    public byte[] getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(byte[] photo) {
+        this.photo = photo;
+    }
 }

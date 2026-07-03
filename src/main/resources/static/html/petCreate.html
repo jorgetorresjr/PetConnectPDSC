@@ -30,44 +30,50 @@
 
         <form id="petCreateForm" enctype="multipart/form-data">
 
-            <label for="name">Nome:</label>
+            <label for="nome">Nome:</label>
             <input
                 type="text"
-                id="name"
-                name="name"
+                id="nome"
+                name="nome"
                 required
-                placeholder="Nome do seu pet">
+                placeholder="Nome do seu pet"
+                maxlength="100">
 
             <div class="form-grid">
 
                 <div>
-                    <label for="specie">Espécie:</label>
+                    <label for="especie">Espécie:</label>
                     <input
                         type="text"
-                        id="specie"
-                        name="specie"
+                        id="especie"
+                        name="especie"
                         required
-                        placeholder="Ex: Cachorro">
+                        placeholder="Ex: Cachorro"
+                        maxlength="50">
                 </div>
 
                 <div>
-                    <label for="breed">Raça:</label>
+                    <label for="raca">Raça:</label>
                     <input
                         type="text"
-                        id="breed"
-                        name="breed"
-                        placeholder="Ex: Poodle">
+                        id="raca"
+                        name="raca"
+                        required
+                        placeholder="Ex: Poodle"
+                        maxlength="50">
                 </div>
 
             </div>
 
-            <label for="age">Idade:</label>
+            <label for="idade">Idade:</label>
             <input
                 type="number"
-                id="age"
-                name="age"
+                id="idade"
+                name="idade"
                 required
-                placeholder="Idade em anos">
+                placeholder="Idade em anos"
+                min="0"
+                max="150">
 
             <label for="photo">Foto do Pet:</label>
             <input
@@ -76,12 +82,13 @@
                 name="photo"
                 accept="image/*">
 
-            <label for="observations">Observações:</label>
+            <label for="observacoes">Observações:</label>
             <textarea
-                id="observations"
-                name="observations"
+                id="observacoes"
+                name="observacoes"
                 rows="4"
-                placeholder="Alergias, medicamentos, cuidados especiais..."></textarea>
+                placeholder="Alergias, medicamentos, cuidados especiais..."
+                maxlength="500"></textarea>
 
             <button
                 type="submit"
@@ -89,12 +96,21 @@
                 Salvar Pet
             </button>
 
+            <div id="pet-create-errors" style="display:none; background-color: #ffe0e0; color: rgb(4, 4, 4); padding: 12px; border-radius: 4px; margin-top: 15px; font-size: 14px; white-space: pre-line;"></div>
+
         </form>
 
     </div>
 
 </div>
-
+<script>
+  // Validação em tempo real para limitar idade máxima
+  document.getElementById("idade").addEventListener("input", function() {
+    if (this.value && parseInt(this.value) > 150) {
+      this.value = 150;
+    }
+  });
+</script>
 <script src="../js/auth.js"></script>
 <script src="../js/petCreate.js"></script>
 
