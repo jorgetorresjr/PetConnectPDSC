@@ -16,7 +16,7 @@ public class RegisterSteps {
     @When("the user submits valid registration data")
     public void submitValidData() {
 
-        registerPage.fillValidForm();
+        registerPage.fillValidForm("PO");
     }
 
     @And("clicks the register button")

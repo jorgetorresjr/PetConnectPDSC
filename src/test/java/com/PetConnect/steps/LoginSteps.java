@@ -45,7 +45,7 @@ public class LoginSteps {
     public void validateLoginSuccess() {
 
         Assertions.assertTrue(
-                loginPage.isHomePageLoaded()
+                loginPage.isHomePageLoaded("petOwnerHome.html")
         );
     }
 

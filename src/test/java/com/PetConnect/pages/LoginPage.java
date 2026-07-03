@@ -40,13 +40,10 @@ public class LoginPage {
         driver.findElement(loginButton).click();
     }
 
-    public boolean isHomePageLoaded() {
+    public boolean isHomePageLoaded(String page) {
+        wait.until(ExpectedConditions.urlContains(page));
 
-        wait.until(
-                ExpectedConditions.urlContains("http://127.0.0.1:5500/src/main/resources/static/html/petOwnerHome.html")
-        );
-
-        return driver.getCurrentUrl().contains("http://127.0.0.1:5500/src/main/resources/static/html/petOwnerHome.html");
+        return driver.getCurrentUrl().contains(page);
     }
 
     public String getLoginErrorMessage() {
