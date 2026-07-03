@@ -41,58 +41,54 @@ async function redirecionarPorPerfil(token) {
 }
 
 async function realizarLogin(email, senha, erroEl) {
-  if (erroEl) erroEl.style.display = "none";
+    if (erroEl) erroEl.classList.add("hidden");
 
-  if (!email || !senha) {
-    if (erroEl) {
-      erroEl.textContent = "Preencha email e senha.";
-      erroEl.style.display = "block";
+    if (!email || !senha) {
+        if (erroEl) {
+            erroEl.textContent = "Preencha email e senha.";
+            erroEl.classList.remove("hidden");
+        }
+        return;
     }
-    return;
-  }
 
-  console.log("[Login] Enviando:", { email });
+    try {
+        const response = await fetch(`${BASE_URL}/auth/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, senha })
+        });
 
-  try {
-    const response = await fetch(`${BASE_URL}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, senha })
-    });
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem("token", data.token);
+            await redirecionarPorPerfil(data.token);
+        } else {
+            const mensagem = await response.text();
 
-    console.log("[Login] Status:", response.status);
-
-    if (response.ok) {
-      const data = await response.json();
-      console.log("[Login] Token recebido:", data.token);
-      localStorage.setItem("token", data.token);
-      await redirecionarPorPerfil(data.token);
-    } else {
-      const mensagem = await response.text();
-      console.error("[Login] Erro backend:", mensagem);
-      if (erroEl) {
-        erroEl.textContent = mensagem || "Email ou senha incorretos.";
-        erroEl.style.display = "block";
-      }
+            if (erroEl) {
+                erroEl.textContent = mensagem;
+                erroEl.classList.remove("hidden");
+            }
+        }
+    } catch (err) {
+        if (erroEl) {
+            erroEl.textContent = "Erro de conexão com o servidor.";
+            erroEl.classList.remove("hidden");
+        }
     }
-  } catch (err) {
-    console.error("[Login] Erro JS:", err);
-    if (erroEl) {
-      erroEl.textContent = "Erro de conexão com o servidor.";
-      erroEl.style.display = "block";
-    }
-  }
 }
 
-const btnLogin = document.getElementById("btnLogin");
-if (btnLogin) {
-  btnLogin.addEventListener("click", async () => {
-    const email = document.getElementById("email").value.trim();
-    const senha = document.getElementById("senha").value;
-    const erroEl = document.getElementById("mensagemErro");
-    await realizarLogin(email, senha, erroEl);
-  });
-}
+// const btnLogin = document.getElementById("btnLogin");
+// if (btnLogin) {
+//   btnLogin.addEventListener("click", async () => {
+//     const email = document.getElementById("email").value.trim();
+//     const senha = document.getElementById("senha").value;
+//     const erroEl = document.getElementById("mensagemErro");
+//     await realizarLogin(email, senha, erroEl);
+//   });
+// }
 
 const formLogin = document.getElementById("form-login");
 if (formLogin) {
