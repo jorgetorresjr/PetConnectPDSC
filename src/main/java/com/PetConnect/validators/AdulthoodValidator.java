@@ -17,8 +17,7 @@ public class AdulthoodValidator implements ConstraintValidator<Adulthood, Date> 
             return true;
         }
 
-        LocalDate nascimento = value.toInstant()
-                .atZone(ZoneId.systemDefault())
+         LocalDate nascimento = new java.sql.Date(value.getTime())
                 .toLocalDate();
 
         return Period.between(nascimento, LocalDate.now()).getYears() >= 18;
