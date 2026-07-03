@@ -1,6 +1,7 @@
 package com.PetConnect.security;
 
-import com.PetConnect.services.AuthorizationService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +20,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import com.PetConnect.services.AuthorizationService;
 
 @Configuration
 @EnableWebSecurity
@@ -34,33 +35,18 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
-                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(
-                        "/auth/**",
-                        "/h2-console/**",
-                        //"/pets/**",
-                        "/html/login.html",
-                        "/html/register.html",
-                        "/html/home.html",
-                        "/html/**",
-                        "/petSitterHome.html",
-                        "/petOwnerHome.html",
-                        "/appointments/**",
-                        "/css/**",
-                        "/js/**",
-                        "/img/**",
-                        "/favicon.ico",
-                        "/users/**",
-                        "/*.js", "/*.css", "/*.html",
-                        "/"
-                    ).permitAll()
+                    // Rotas estritamente públicas
+                    .requestMatchers("/auth/**", "/h2-console/**", "/users/register").permitAll()
+                    // Recursos estáticos públicos
+                    .requestMatchers("/css/**", "/js/**", "/img/**", "/*.js", "/*.css", "/*.html", "/").permitAll()
+                    // Toda rota de API (pets, petowners, etc) exige login
                     .anyRequest().authenticated()
                 )
-                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 .build();
     }
 
