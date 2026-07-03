@@ -13,27 +13,27 @@
   <h1>Criar Conta</h1>
 
   <form id="form-register">
-    <input type="text" id="name" placeholder="Nome completo" required />
+    <input type="text" id="name" placeholder="Nome completo" required maxlength="100" />
     
     <div class="form-grid">
-      <input type="email" id="emailRegister" placeholder="Email" required />
-      <input type="password" id="passwordRegister" placeholder="Senha" required />
+      <input type="email" id="emailRegister" placeholder="Email" required maxlength="100" />
+      <input type="password" id="passwordRegister" placeholder="Senha" required maxlength="20" />
       <input type="text" id="cpfRegister" placeholder="CPF" required maxlength="14" />
       <input type="date" id="birthDateRegister" placeholder="Data de nascimento" required />
     </div>
     
-    <input type="text" id="phoneRegister" placeholder="Telefone" required />
+    <input type="text" id="phoneRegister" placeholder="Telefone" required maxlength="15" />
     
     <fieldset style="border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 15px; text-align: left;">
       <legend style="color: var(--primary); font-weight: bold; padding: 0 10px;">Endereço</legend>
       <input type="text" id="addressCep" placeholder="CEP" required maxlength="9" />
       
       <div class="form-grid">
-        <input type="text" id="addressStreet" placeholder="Logradouro" required />
-        <input type="number" id="addressNumber" placeholder="Número" required />
-        <input type="text" id="addressComplement" placeholder="Complemento" />
-        <input type="text" id="addressNeighborhood" placeholder="Bairro" required />
-        <input type="text" id="addressCity" placeholder="Cidade" required />
+        <input type="text" id="addressStreet" placeholder="Logradouro" required maxlength="150" />
+        <input type="number" id="addressNumber" placeholder="Número" required max="99999"/>
+        <input type="text" id="addressComplement" placeholder="Complemento" maxlength="30" />
+        <input type="text" id="addressNeighborhood" placeholder="Bairro" required maxlength="150" />
+        <input type="text" id="addressCity" placeholder="Cidade" required maxlength="50" />
         <input type="text" id="addressState" placeholder="Estado (UF)" maxlength="2" required />
       </div>
     </fieldset>
@@ -45,6 +45,9 @@
     </select>
 
     <button id="btnRegister" type="submit" class="btn-block">Cadastrar</button>
+
+    <div id="register-errors" style="display:none; background-color: #ffe0e0; color: rgb(4, 4, 4); padding: 12px; border-radius: 4px; margin-bottom: 15px; font-size: 14px; white-space: pre-line;"></div>
+
   </form>
 
   <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border);">
@@ -56,6 +59,13 @@
 <script src="../js/register.js"></script>
 <script>
     setTimeout(() => { if (typeof setupLogoutButton === 'function') setupLogoutButton(); }, 500);
+
+      document.getElementById("addressNumber").addEventListener("input", function() {
+    if (this.value.length > 5) {
+      this.value = this.value.slice(0, 5);
+    }
+  });
 </script>
+
 </body>
 </html>

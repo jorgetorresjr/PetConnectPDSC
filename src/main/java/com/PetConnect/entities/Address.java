@@ -17,40 +17,40 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class Address {
 
-    @NotBlank
-    @Size(max = 150)
-    @Column(name = "END_TXT_LOGRADOURO", length = 150, nullable = false)
-    private String street;
+@NotBlank(message = "O logradouro é obrigatório.")
+@Size(max = 150, message = "O logradouro deve ter no máximo 150 caracteres.")
+@Column(name = "END_TXT_LOGRADOURO", length = 150, nullable = false)
+private String street;
 
-    @NotBlank
-    @Size(max = 150)
-    @Column(name = "END_TXT_BAIRRO", length = 150, nullable = false)
-    private String neighborhood;
+@NotBlank(message = "O bairro é obrigatório.")
+@Size(max = 150, message = "O bairro deve ter no máximo 150 caracteres.")
+@Column(name = "END_TXT_BAIRRO", length = 150, nullable = false)
+private String neighborhood;
 
-    @NotNull
-    @Positive
-    @Column(name = "END_NUMERO", nullable = false)
-    private Integer number;
+@NotNull(message = "O número é obrigatório.")
+@Positive(message = "O número deve ser positivo.")
+@Column(name = "END_NUMERO", nullable = false)
+private Integer number;
 
-    @Size(max = 30)
-    @Column(name = "END_TXT_COMPLEMENTO", length = 30)
-    private String complement;
+@Size(max = 30, message = "O complemento deve ter no máximo 30 caracteres.")
+@Column(name = "END_TXT_COMPLEMENTO", length = 30)
+private String complement;
 
-    @NotBlank
-    @Pattern(
-            regexp = "^\\d{5}-\\d{3}$",
-            message = "{exemplo.jpa.Endereco.cep}"
-    )
-    @Column(name = "END_TXT_CEP", length = 9, nullable = false)
-    private String cep;
+@NotBlank(message = "O CEP é obrigatório.")
+@Pattern(
+        regexp = "^\\d{5}-\\d{3}$",
+        message = "O CEP deve conter XXXXX-XXX."
+)
+@Column(name = "END_TXT_CEP", length = 9, nullable = false)
+private String cep;
 
-    @NotBlank
-    @Size(min = 2, max = 50)
-    @Column(name = "END_TXT_CIDADE", length = 50, nullable = false)
-    private String city;
+@NotBlank(message = "A cidade é obrigatória.")
+@Size(min = 2, max = 50, message = "A cidade deve ter entre 2 e 50 caracteres.")
+@Column(name = "END_TXT_CIDADE", length = 50, nullable = false)
+private String city;
 
-    @NotBlank
-    @Size(min = 2, max = 2)
-    @Column(name = "END_TXT_ESTADO", length = 2, nullable = false)
-    private String state;
+@NotBlank(message = "O estado é obrigatório.")
+@Size(min = 2, max = 2, message = "O estado deve ter exatamente 2 caracteres (ex: SP, RJ).")
+@Column(name = "END_TXT_ESTADO", length = 2, nullable = false)
+private String state;
 }

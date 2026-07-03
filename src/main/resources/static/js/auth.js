@@ -90,6 +90,7 @@ async function realizarLogin(email, senha, erroEl) {
 //   });
 // }
 
+
 const formLogin = document.getElementById("form-login");
 if (formLogin) {
   formLogin.addEventListener("submit", async (e) => {
