@@ -11,11 +11,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('cadastrarPetBtn')?.addEventListener('click', () => window.location.href = 'petCreate.html');
     
     document.getElementById('criarPerfilBtn')?.addEventListener('click', () => {
-        if (perfilAtualId) {
-            window.location.href = `petOwnerProfile.html?id=${perfilAtualId}`;
-        } else {
-            window.location.href = 'petOwnerProfileCreate.html';
-        }
+        window.location.href = 'petOwnerProfileCreate.html';
     });
 
     document.getElementById("btnToggleBusca")?.addEventListener("click", () => {
