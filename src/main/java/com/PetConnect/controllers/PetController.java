@@ -92,6 +92,75 @@ public class PetController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updatePet(
+            @PathVariable Long id,
+            @ModelAttribute @Valid PetDTO petDTO,
+            BindingResult bindingResult,
+            @RequestParam(required = false) MultipartFile photo
+    ) {
+        if (bindingResult.hasErrors()) {
+            List<Map<String, String>> errors = bindingResult.getFieldErrors().stream()
+                    .map(e -> {
+                        Map<String, String> error = new HashMap<>();
+                        error.put("field", e.getField());
+                        error.put("defaultMessage", e.getDefaultMessage());
+                        return error;
+                    })
+                    .collect(Collectors.toList());
+            return ResponseEntity.badRequest().body(Map.of("errors", errors));
+        }
+
+        org.springframework.security.core.Authentication authentication =
+                org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        java.util.Optional<com.PetConnect.entities.PetOwner> ownerOpt =
+                petOwnerRepository.findByEmail(email);
+
+        if (ownerOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("Dono não encontrado.");
+        }
+
+        java.util.Optional<Pet> petOpt = petRepository.findById(id);
+        if (petOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Pet pet = petOpt.get();
+        if (pet.getOwner() == null || !pet.getOwner().getId().equals(ownerOpt.get().getId())) {
+            return ResponseEntity.status(403).body("Apenas o tutor dono do pet pode editar.");
+        }
+
+        pet.setName(petDTO.nome());
+        pet.setSpecie(petDTO.especie());
+        pet.setBreed(petDTO.raca());
+        pet.setAge(petDTO.idade());
+        pet.setObservations(petDTO.observacoes());
+
+        try {
+            if (photo != null && !photo.isEmpty()) {
+                pet.setPhoto(photo.getBytes());
+            }
+        } catch (Exception ignored) {}
+
+        try {
+            petRepository.save(pet);
+        } catch (jakarta.validation.ConstraintViolationException e) {
+            List<Map<String, String>> errors = e.getConstraintViolations().stream()
+                    .map(cv -> {
+                        Map<String, String> error = new HashMap<>();
+                        error.put("field", cv.getPropertyPath().toString());
+                        error.put("defaultMessage", cv.getMessage());
+                        return error;
+                    })
+                    .collect(Collectors.toList());
+            return ResponseEntity.badRequest().body(Map.of("errors", errors));
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Pet> getById(@PathVariable Long id) {
         return petRepository.findById(id)

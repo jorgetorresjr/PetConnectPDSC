@@ -30,7 +30,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             <p><strong>Raça:</strong> ${pet.breed || "-"}</p>
             <p><strong>Idade:</strong> ${pet.age} ano(s)</p>
             <p><strong>Observações:</strong> ${pet.observations || "-"}</p>
+            <button id="editarPetBtn" class="btn-block mt-20">Editar Pet</button>
         `;
+
+        const editarBtn = document.getElementById("editarPetBtn");
+        if (editarBtn) {
+            editarBtn.addEventListener("click", () => {
+                window.location.href = `petCreate.html?id=${id}`;
+            });
+        }
     } catch (error) {
         div.innerHTML = "<p class='msg-erro'>Falha ao conectar com o servidor.</p>";
         console.error(error);

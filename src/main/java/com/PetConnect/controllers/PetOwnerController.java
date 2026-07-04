@@ -31,6 +31,7 @@ public class PetOwnerController {
     public ResponseEntity<PetOwnerDTO> updateProfile(
 
             @RequestParam(required = false) String phone,
+            @RequestParam(required = false) String name,
             @RequestParam(required = false) MultipartFile photo
 
     ) throws IOException {
@@ -70,6 +71,9 @@ public class PetOwnerController {
         if (photo != null && !photo.isEmpty()) {
             petOwner.setPhoto(photo.getBytes());
         }
+        if (name != null && !name.isBlank()) {
+    petOwner.setName(name);
+}
 
         petOwnerRepository.save(petOwner);
 

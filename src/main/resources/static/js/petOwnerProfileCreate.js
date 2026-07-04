@@ -46,6 +46,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         e.preventDefault();
         const formData = new FormData();
         formData.append("phone", inputTelefone.value);
+        formData.append("name", inputNome.value);
         if (inputFoto.files.length) {
             formData.append("photo", inputFoto.files[0]);
         }
