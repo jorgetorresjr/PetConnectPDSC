@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     const servicesCheckboxesDiv = document.getElementById('servicesCheckboxes');
     const servicePricesDiv = document.getElementById('servicePrices');
     if (servicesCheckboxesDiv && servicePricesDiv) {
@@ -44,6 +44,70 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (typeof setupLogoutButton === 'function') setupLogoutButton();
+
+    const token = localStorage.getItem('token');
+    if (token) {
+        try {
+            const response = await fetch(`${BASE_URL}/petsitters/me`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                const sitter = await response.json();
+                document.getElementById('specialty').value = sitter.specialty || '';
+                document.getElementById('certificates').value = sitter.certificates || '';
+
+                if (sitter.availability) {
+                    const partes = sitter.availability.split('|');
+                    if (partes.length === 2) {
+                        try {
+                            const diasSelecionados = JSON.parse(partes[0]);
+                            if (Array.isArray(diasSelecionados)) {
+                                diasSelecionados.forEach(dia => {
+                                    const checkbox = document.querySelector(`input[name="dias"][value="${dia}"]`);
+                                    if (checkbox) checkbox.checked = true;
+                                });
+                            }
+                        } catch (err) {
+                            const diasBrutos = partes[0].replace(/[[\]"]+/g, '').split(',');
+                            diasBrutos.forEach(dia => {
+                                const trimmed = dia.trim();
+                                const checkbox = document.querySelector(`input[name="dias"][value="${trimmed}"]`);
+                                if (checkbox) checkbox.checked = true;
+                            });
+                        }
+
+                        const horarios = partes[1].split('-');
+                        if (horarios.length === 2) {
+                            document.getElementById('horarioInicio').value = horarios[0] || '';
+                            document.getElementById('horarioFim').value = horarios[1] || '';
+                        }
+                    }
+                }
+
+                if (sitter.servicePrices) {
+                    try {
+                        const prices = JSON.parse(sitter.servicePrices);
+                        Object.entries(prices).forEach(([nomeServico, preco]) => {
+                            const checkbox = document.querySelector(`#servicesCheckboxes input[data-name='${nomeServico}']`);
+                            if (checkbox) {
+                                checkbox.checked = true;
+                                checkbox.dispatchEvent(new Event('change'));
+                                const priceInput = document.getElementById(`preco_${nomeServico}`);
+                                if (priceInput) {
+                                    priceInput.value = preco;
+                                }
+                            }
+                        });
+                    } catch (err) {
+                        console.error('Erro ao carregar preços do pet sitter:', err);
+                    }
+                }
+            }
+        } catch (err) {
+            console.error('Erro ao recuperar perfil do pet sitter:', err);
+        }
+    }
 
     const form = document.getElementById('petSitterProfileForm');
     if (form) {
@@ -92,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
 
                 if (response.ok) {
-                    alert('Perfil criado com sucesso!');
+                    alert('Dados salvos com sucesso!');
                     //form.reset();
                    // servicePricesDiv.innerHTML = '';
                      window.location.href = '../html/petSitterHome.html';
