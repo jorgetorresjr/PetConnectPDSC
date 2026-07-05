@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const agendamentos = Array.isArray(data) ? data : [];
         
         const pendentesArr = agendamentos.filter(a => a.status === "PENDENTE");
-        const aceitosArr = agendamentos.filter(a => a.status === "ACEITO" || a.status === "AGENDADO");
+        const aceitosArr = agendamentos.filter(a => a.status === "ACEITO" || a.status === "Aceito");
         const concluidosArr = agendamentos.filter(a => a.status === "CONCLUIDO");
         
         if(document.getElementById('totalAgenda')) document.getElementById('totalAgenda').textContent = aceitosArr.length;
