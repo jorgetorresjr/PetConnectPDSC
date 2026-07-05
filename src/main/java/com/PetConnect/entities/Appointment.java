@@ -50,6 +50,9 @@ public class Appointment {
     @Column(name = "CREATED_AT", nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "STATUS_HISTORY", columnDefinition = "TEXT")
+    private String statusHistory;
+
     @PrePersist
     public void prePersist() {
         if (status == null) {

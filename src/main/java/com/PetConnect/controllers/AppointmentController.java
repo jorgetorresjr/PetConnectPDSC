@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import java.time.format.DateTimeFormatter;
 
 import com.PetConnect.DTOs.CreateAppointmentDTO;
 import com.PetConnect.entities.Appointment;
@@ -144,31 +145,85 @@ public class AppointmentController {
         return ResponseEntity.ok(response);
     }
 
-   @PutMapping("/{id}/status")
-public ResponseEntity<?> updateAppointmentStatus(
-        @PathVariable Long id,
-        @RequestParam AppointmentStatus status
-) {
-    System.out.println("[DEBUG] updateAppointmentStatus chamado - id=" + id + " status=" + status);
-    if (status != AppointmentStatus.ACEITO && status != AppointmentStatus.RECUSADO) {
-        return ResponseEntity.badRequest().body("Status inválido. Use ACEITO ou RECUSADO.");
+    @PutMapping("/{id}/status")
+    public ResponseEntity<?> updateAppointmentStatus(
+            @PathVariable Long id,
+            @RequestParam AppointmentStatus status
+    ) {
+        System.out.println("[DEBUG] updateAppointmentStatus chamado - id=" + id + " status=" + status);
+        if (status != AppointmentStatus.ACEITO && status != AppointmentStatus.RECUSADO) {
+            return ResponseEntity.badRequest().body("Status inválido. Use ACEITO ou RECUSADO.");
+        }
+
+        Optional<Appointment> appointmentOpt = appointmentRepository.findById(id);
+        if (appointmentOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("Agendamento não encontrado.");
+        }
+
+        Appointment appointment = appointmentOpt.get();
+
+        if (appointment.getStatus() != AppointmentStatus.PENDENTE) {
+            return ResponseEntity.badRequest().body("Somente solicitações PENDENTE podem ser alteradas.");
+        }
+
+        appointment.setStatus(status);
+        Appointment saved = appointmentRepository.save(appointment);
+        return ResponseEntity.ok(toResponse(saved));
     }
 
-    Optional<Appointment> appointmentOpt = appointmentRepository.findById(id);
-    if (appointmentOpt.isEmpty()) {
-        return ResponseEntity.badRequest().body("Agendamento não encontrado.");
-    } 
-
-    Appointment appointment = appointmentOpt.get();
-
-    if (appointment.getStatus() != AppointmentStatus.PENDENTE) {
-        return ResponseEntity.badRequest().body("Somente solicitações PENDENTE podem ser alteradas.");
+    private void appendStatusHistory(Appointment a, String displayStatus) {
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter tf = DateTimeFormatter.ofPattern("HH:mm");
+        String date = a.getServiceDate() != null ? a.getServiceDate().format(df) : "-";
+        String time = a.getServiceTime() != null ? a.getServiceTime().format(tf) : "-";
+        String entry = String.format("DATA: %s %s - %s", date, time, displayStatus);
+        String hist = a.getStatusHistory();
+        a.setStatusHistory((hist == null || hist.isEmpty()) ? entry : hist + "\n" + entry);
     }
 
-    appointment.setStatus(status);
-    Appointment saved = appointmentRepository.save(appointment);
-    return ResponseEntity.ok(toResponse(saved));
-}
+    @PutMapping("/{id}/start")
+    public ResponseEntity<?> startAppointment(@PathVariable Long id) {
+        String email = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication().getName();
+
+        Optional<Appointment> appointmentOpt = appointmentRepository.findById(id);
+        if (appointmentOpt.isEmpty()) return ResponseEntity.badRequest().body("Agendamento não encontrado.");
+
+        Appointment a = appointmentOpt.get();
+        if (a.getPetSitter() == null || !email.equals(a.getPetSitter().getEmail())) {
+            return ResponseEntity.status(403).body("Apenas o petsitter responsável pode iniciar.");
+        }
+        if (a.getStatus() != AppointmentStatus.ACEITO) {
+            return ResponseEntity.badRequest().body("Somente agendamentos ACEITOS podem ser iniciados.");
+        }
+
+        a.setStatus(AppointmentStatus.EM_ANDAMENTO);
+        appendStatusHistory(a, "EM ANDAMENTO");
+        Appointment saved = appointmentRepository.save(a);
+        return ResponseEntity.ok(toResponse(saved));
+    }
+
+    @PutMapping("/{id}/finish")
+    public ResponseEntity<?> finishAppointment(@PathVariable Long id) {
+        String email = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication().getName();
+
+        Optional<Appointment> appointmentOpt = appointmentRepository.findById(id);
+        if (appointmentOpt.isEmpty()) return ResponseEntity.badRequest().body("Agendamento não encontrado.");
+
+        Appointment a = appointmentOpt.get();
+        if (a.getPetSitter() == null || !email.equals(a.getPetSitter().getEmail())) {
+            return ResponseEntity.status(403).body("Apenas o petsitter responsável pode finalizar.");
+        }
+        if (a.getStatus() != AppointmentStatus.EM_ANDAMENTO) {
+            return ResponseEntity.badRequest().body("Somente agendamentos EM ANDAMENTO podem ser finalizados.");
+        }
+
+        a.setStatus(AppointmentStatus.CONCLUIDO);
+        appendStatusHistory(a, "FINALIZADO");
+        Appointment saved = appointmentRepository.save(a);
+        return ResponseEntity.ok(toResponse(saved));
+    }
 
 private Map<String, Object> toResponse(Appointment a) {
     Map<String, Object> m = new LinkedHashMap<>();
@@ -185,6 +240,7 @@ private Map<String, Object> toResponse(Appointment a) {
     m.put("petSitterId", a.getPetSitter() != null ? a.getPetSitter().getId() : null);
     m.put("petSitterName", a.getPetSitter() != null ? a.getPetSitter().getName() : null);
     m.put("createdAt", a.getCreatedAt());
+        m.put("history", a.getStatusHistory());
     return m;
 }
 }

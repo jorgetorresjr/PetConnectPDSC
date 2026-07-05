@@ -118,7 +118,7 @@ public abstract class User implements UserDetails {
 
     @Basic(fetch = FetchType.LAZY)
     @Column(
-            name = "IMG_FOTO",
+            name = "IMAGEM_FOTO",
             columnDefinition = "BLOB",
             table = "TB_FOTO_USUARIO",
             nullable = true

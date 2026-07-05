@@ -66,14 +66,18 @@
 
             <label>Foto de Perfil:</label>
             <input type="file" id="photo" name="photo" accept="image/*">
+            <p id="photoError" class="page-subtitle" style="color: var(--danger); display: none; margin-top: 10px;"></p>
+            <div style="text-align:center; margin-top:20px;">
+                <img id="photoPreview" src="../assets/image.png" alt="Preview da foto" style="width:140px;height:140px;border-radius:50%;object-fit:cover;border:2px solid #ddd;">
+            </div>
             
             <button type="submit" class="btn-block mt-20">Salvar Perfil</button>
         </form>
     </div>
 </div>
 
-<script src="../js/petSitterProfileCreate.js" defer></script>
 <script src="../js/auth.js" defer></script>
+<script src="../js/petSitterProfileCreate.js" defer></script>
 <script>
   // Validação de preço máximo nos inputs dinâmicos
   document.addEventListener('change', function(e) {

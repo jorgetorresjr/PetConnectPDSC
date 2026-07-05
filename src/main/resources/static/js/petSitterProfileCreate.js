@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     const servicesCheckboxesDiv = document.getElementById('servicesCheckboxes');
     const servicePricesDiv = document.getElementById('servicePrices');
     if (servicesCheckboxesDiv && servicePricesDiv) {
@@ -44,6 +44,115 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (typeof setupLogoutButton === 'function') setupLogoutButton();
+
+    const MAX_PHOTO_SIZE = 2 * 1024 * 1024; // 2MB
+    const token = localStorage.getItem('token');
+    const previewImage = document.getElementById('photoPreview');
+    const photoInput = document.getElementById('photo');
+    const photoError = document.getElementById('photoError');
+
+    const showPhotoError = message => {
+        if (photoError) {
+            photoError.textContent = message;
+            photoError.style.display = message ? 'block' : 'none';
+        }
+    };
+
+    if (photoInput && previewImage) {
+        photoInput.addEventListener('change', () => {
+            if (!photoInput.files || photoInput.files.length === 0) {
+                showPhotoError('');
+                previewImage.src = '../assets/image.png';
+                return;
+            }
+
+            const file = photoInput.files[0];
+            if (file.size > MAX_PHOTO_SIZE) {
+                showPhotoError('A imagem deve ter no máximo 2MB.');
+                previewImage.src = '../assets/image.png';
+                return;
+            }
+
+            showPhotoError('');
+            previewImage.src = URL.createObjectURL(file);
+        });
+    }
+    if (token) {
+        try {
+            const response = await fetch(`${BASE_URL}/petsitters/me`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                const sitter = await response.json();
+                document.getElementById('specialty').value = sitter.specialty || '';
+                document.getElementById('certificates').value = sitter.certificates || '';
+
+                if (sitter.id && previewImage) {
+                    try {
+                        const photoResponse = await fetch(`${BASE_URL}/users/${sitter.id}/photo`, {
+                            headers: { Authorization: `Bearer ${token}` }
+                        });
+                        if (photoResponse.ok) {
+                            const blob = await photoResponse.blob();
+                            previewImage.src = URL.createObjectURL(blob);
+                        }
+                    } catch (photoErr) {
+                        console.warn('Erro ao carregar foto do pet sitter:', photoErr);
+                    }
+                }
+
+                if (sitter.availability) {
+                    const partes = sitter.availability.split('|');
+                    if (partes.length === 2) {
+                        try {
+                            const diasSelecionados = JSON.parse(partes[0]);
+                            if (Array.isArray(diasSelecionados)) {
+                                diasSelecionados.forEach(dia => {
+                                    const checkbox = document.querySelector(`input[name="dias"][value="${dia}"]`);
+                                    if (checkbox) checkbox.checked = true;
+                                });
+                            }
+                        } catch (err) {
+                            const diasBrutos = partes[0].replace(/[[\]"]+/g, '').split(',');
+                            diasBrutos.forEach(dia => {
+                                const trimmed = dia.trim();
+                                const checkbox = document.querySelector(`input[name="dias"][value="${trimmed}"]`);
+                                if (checkbox) checkbox.checked = true;
+                            });
+                        }
+
+                        const horarios = partes[1].split('-');
+                        if (horarios.length === 2) {
+                            document.getElementById('horarioInicio').value = horarios[0] || '';
+                            document.getElementById('horarioFim').value = horarios[1] || '';
+                        }
+                    }
+                }
+
+                if (sitter.servicePrices) {
+                    try {
+                        const prices = JSON.parse(sitter.servicePrices);
+                        Object.entries(prices).forEach(([nomeServico, preco]) => {
+                            const checkbox = document.querySelector(`#servicesCheckboxes input[data-name='${nomeServico}']`);
+                            if (checkbox) {
+                                checkbox.checked = true;
+                                checkbox.dispatchEvent(new Event('change'));
+                                const priceInput = document.getElementById(`preco_${nomeServico}`);
+                                if (priceInput) {
+                                    priceInput.value = preco;
+                                }
+                            }
+                        });
+                    } catch (err) {
+                        console.error('Erro ao carregar preços do pet sitter:', err);
+                    }
+                }
+            }
+        } catch (err) {
+            console.error('Erro ao recuperar perfil do pet sitter:', err);
+        }
+    }
 
     const form = document.getElementById('petSitterProfileForm');
     if (form) {
@@ -91,8 +200,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     body: formData
                 });
 
-                if (response.ok) {
-                    alert('Perfil criado com sucesso!');
+                if (photoInput && photoInput.files && photoInput.files.length > 0 && photoInput.files[0].size > MAX_PHOTO_SIZE) {
+                showPhotoError('A imagem deve ter no máximo 2MB.');
+                return;
+            }
+
+            if (response.ok) {
+                    alert('Dados salvos com sucesso!');
                     //form.reset();
                    // servicePricesDiv.innerHTML = '';
                      window.location.href = '../html/petSitterHome.html';

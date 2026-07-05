@@ -39,7 +39,7 @@ private String complement;
 @NotBlank(message = "O CEP é obrigatório.")
 @Pattern(
         regexp = "^\\d{5}-\\d{3}$",
-        message = "O CEP deve conter XXXXX-XXX."
+        message = "O CEP deve conter XXXXX-XXX números."
 )
 @Column(name = "END_TXT_CEP", length = 9, nullable = false)
 private String cep;

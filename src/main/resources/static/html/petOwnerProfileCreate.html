@@ -40,7 +40,7 @@
             <input
                 type="text"
                 id="name"
-                readonly>
+                name="name" required minlength="3" maxlength="100">
             <label>Email</label>
             <input
                 type="email"
@@ -51,17 +51,18 @@
                 type="text"
                 id="phone"
                 name="phone"
-                placeholder="(81) 99999-9999">
+                placeholder="(81) 99999-9999" minlength="8" maxlength="15">
             <label>Foto de Perfil</label>
             <input
                 type="file"
                 id="photo"
                 name="photo"
                 accept="image/*">
+            <p id="photoError" class="page-subtitle" style="color: var(--danger); display: none; margin-top: 10px;"></p>
             <div style="text-align:center; margin-top:20px;">
                 <img
                     id="preview"
-                    src="../img/user.png"
+                    src="../assets/image.png"
                     alt="Foto"
                     style="width:140px;height:140px;border-radius:50%;object-fit:cover;border:2px solid #ddd;">
             </div>

@@ -77,7 +77,7 @@ public class PetSitterProfilePage {
         );
 
         Assertions.assertEquals(
-                "Perfil criado com sucesso!",
+                "Dados salvos com sucesso!",
                 alert.getText()
         );
 
