@@ -58,7 +58,7 @@ function renderPaginaHistorico() {
                 <div>
                     <h4>${ag.serviceName}</h4>
                     <p><strong>Pet:</strong> ${ag.petName}</p>
-                    <p><strong>Cuidador:</strong> ${ag.petSitterName}</p>
+                    <p><strong>pet sitter:</strong> ${ag.petSitterName}</p>
                     <p><strong>Data:</strong> ${data} às ${ag.serviceTime.slice(0, 5)}</p>
                 </div>
 
@@ -278,7 +278,7 @@ async function carregarSitters() {
 
         const sitters = await res.json();
         sittersLista.innerHTML = "";
-        if (sitters.length === 0) { sittersLista.innerHTML = "<p class='page-subtitle'>Nenhum cuidador.</p>"; return; }
+        if (sitters.length === 0) { sittersLista.innerHTML = "<p class='page-subtitle'>Nenhum pet sitter.</p>"; return; }
 
         sitters.forEach(sitter => {
             let precoTexto = "Sob consulta";
@@ -305,7 +305,7 @@ async function carregarSitters() {
             `;
             sittersLista.appendChild(card);
         });
-    } catch (e) { sittersLista.innerHTML = "<p class='page-subtitle'>Erro ao carregar os cuidadores.</p>"; }
+    } catch (e) { sittersLista.innerHTML = "<p class='page-subtitle'>Erro ao carregar os pet sitteres.</p>"; }
 }
 
 document.getElementById("btnPaginaAnterior").onclick = () => {

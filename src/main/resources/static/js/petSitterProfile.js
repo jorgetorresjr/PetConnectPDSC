@@ -32,11 +32,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (btnFecharX) btnFecharX.onclick = fecharModal;
 
     if (!sitterId) {
-        divPerfil.innerHTML = "<p class='msg-erro'>Cuidador não encontrado (ID ausente).</p>";
+        divPerfil.innerHTML = "<p class='msg-erro'>pet sitter não encontrado (ID ausente).</p>";
         return;
     }
 
-    let sitterNameGlobal = "o Cuidador";
+    let sitterNameGlobal = "o pet sitter";
 
     // ==========================================
     // 1. BUSCAR DADOS DA ANA (PET SITTER)
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!res.ok) throw new Error("Falha ao carregar perfil.");
         
         const sitter = await res.json();
-        sitterNameGlobal = sitter.name || "o Cuidador";
+        sitterNameGlobal = sitter.name || "o pet sitter";
 
         // Formatar Disponibilidade (De ["Segunda"] para "Segunda")
         let dias = "-";
@@ -95,7 +95,7 @@ if (sitter.availability) {
             console.error("Erro ao processar preços", e);
         }
 
-        // Esconde o botão de agendar se for o próprio Cuidador vendo o seu perfil
+        // Esconde o botão de agendar se for o próprio pet sitter vendo o seu perfil
         try {
             const meuRes = await fetch(`${BASE_URL}/petsitters/me`, { headers: { "Authorization": "Bearer " + token } });
             if (meuRes.ok) {
