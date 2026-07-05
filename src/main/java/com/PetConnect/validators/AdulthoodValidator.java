@@ -20,6 +20,6 @@ public class AdulthoodValidator implements ConstraintValidator<Adulthood, Date> 
          LocalDate nascimento = new java.sql.Date(value.getTime())
                 .toLocalDate();
 
-        return Period.between(nascimento, LocalDate.now()).getYears() >= 18;
+        return Period.between(nascimento, LocalDate.now()).getYears() >= 18 && Period.between(nascimento, LocalDate.now()).getYears() < 110;
     }
 }

@@ -142,7 +142,7 @@ public abstract class User implements UserDetails {
 
     @NotNull(message = "A data de nascimento é obrigatória.")
     @Past(message = "A data de nascimento deve ser anterior à data atual.")
-    @Adulthood(message = "É necessário ter pelo menos 18 anos.")
+    @Adulthood(message = "O usuário deve ter entre 18 e 110 anos.")
     @Temporal(TemporalType.DATE)
     @Column(name = "DT_NASCIMENTO", nullable = true)
     protected Date birthDate;

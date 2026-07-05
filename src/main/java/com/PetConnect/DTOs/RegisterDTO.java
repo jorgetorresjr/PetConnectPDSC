@@ -54,7 +54,7 @@ public record RegisterDTO(
 
     @NotNull(message = "A data de nascimento é obrigatória.")
     @Past(message = "A data de nascimento deve ser anterior à data atual.")
-    @Adulthood(message = "É necessário ter pelo menos 18 anos.")
+    @Adulthood(message = "O usuário deve ter entre 18 e 110 anos.")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     Date birthDate,
 
