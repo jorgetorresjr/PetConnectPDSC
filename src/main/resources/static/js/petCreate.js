@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", async () => {
+    const MAX_PHOTO_SIZE = 2 * 1024 * 1024; // 2MB
     const form = document.getElementById("petCreateForm");
     if (!form) return;
 
@@ -7,6 +8,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const pageTitle = document.querySelector("h2.mb-25");
     const submitButton = form.querySelector("button[type='submit']");
     const erroDiv = document.getElementById("pet-create-errors");
+    const photoInput = document.getElementById("photo");
+    const photoPreview = document.getElementById("photoPreview");
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -33,6 +36,22 @@ document.addEventListener("DOMContentLoaded", async () => {
                 document.getElementById("raca").value = pet.breed || "";
                 document.getElementById("idade").value = pet.age || "";
                 document.getElementById("observacoes").value = pet.observations || "";
+                if (photoPreview) {
+                photoPreview.src = "../assets/image.png"; // Default image
+                    try {
+                        const photoResponse = await fetch(`${BASE_URL}/pets/${petId}/photo`, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        });
+                        if (photoResponse.ok) {
+                            const blob = await photoResponse.blob();
+                            photoPreview.src = URL.createObjectURL(blob);
+                        }
+                    } catch (photoError) {
+                        console.warn("Não foi possível carregar a foto do pet:", photoError);
+                    }
+                }
             } else if (response.status === 404) {
                 erroDiv.textContent = "Pet não encontrado para edição.";
                 erroDiv.style.display = "block";
@@ -47,6 +66,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    if (photoInput && photoPreview) {
+        photoInput.addEventListener("change", () => {
+            if (!photoInput.files.length) {
+                photoPreview.src = "../assets/image.png";
+                return;
+            }
+
+            const file = photoInput.files[0];
+            if (file && file.type.startsWith("image/")) {
+                photoPreview.src = URL.createObjectURL(file);
+            } else {
+                photoPreview.src = "../assets/image.png";
+            }
+        });
+    }
+
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const token = localStorage.getItem("token");
@@ -58,18 +93,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         // Validar foto
-        const photoInput = document.getElementById("photo");
-        if (photoInput.files.length > 0) {
+        if (photoInput && photoInput.files.length > 0) {
             const file = photoInput.files[0];
             const tiposValidos = ["image/jpeg", "image/png", "image/gif", "image/webp"];
             
             if (!tiposValidos.includes(file.type)) {
-                alert("Apenas imagens JPEG, PNG, GIF ou WebP são permitidas.");
+                erroDiv.textContent = "Apenas imagens JPEG, PNG, GIF ou WebP são permitidas.";
+                erroDiv.style.display = "block";
                 return;
             }
             
-            if (file.size > 5 * 1024 * 1024) {
-                alert("A foto deve ter no máximo 5MB.");
+            if (file.size > MAX_PHOTO_SIZE) {
+                erroDiv.textContent = "A foto deve ter no máximo 2MB.";
+                erroDiv.style.display = "block";
                 return;
             }
         }

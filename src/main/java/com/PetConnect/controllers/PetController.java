@@ -7,6 +7,7 @@ import com.PetConnect.repositories.PetRepository;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -166,6 +167,21 @@ public class PetController {
         return petRepository.findById(id)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping(value = "/{id}/photo", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<byte[]> getPetPhoto(@PathVariable Long id) {
+        var petOpt = petRepository.findById(id);
+        if (petOpt.isEmpty()) {
+            return ResponseEntity.<byte[]>notFound().build();
+        }
+        byte[] photo = petOpt.get().getPhoto();
+        if (photo == null || photo.length == 0) {
+            return ResponseEntity.<byte[]>notFound().build();
+        }
+        return ResponseEntity.<byte[]>ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(photo);
     }
     
     @GetMapping("/my")

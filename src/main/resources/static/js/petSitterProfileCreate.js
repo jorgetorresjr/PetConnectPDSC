@@ -45,7 +45,38 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     if (typeof setupLogoutButton === 'function') setupLogoutButton();
 
+    const MAX_PHOTO_SIZE = 2 * 1024 * 1024; // 2MB
     const token = localStorage.getItem('token');
+    const previewImage = document.getElementById('photoPreview');
+    const photoInput = document.getElementById('photo');
+    const photoError = document.getElementById('photoError');
+
+    const showPhotoError = message => {
+        if (photoError) {
+            photoError.textContent = message;
+            photoError.style.display = message ? 'block' : 'none';
+        }
+    };
+
+    if (photoInput && previewImage) {
+        photoInput.addEventListener('change', () => {
+            if (!photoInput.files || photoInput.files.length === 0) {
+                showPhotoError('');
+                previewImage.src = '../assets/image.png';
+                return;
+            }
+
+            const file = photoInput.files[0];
+            if (file.size > MAX_PHOTO_SIZE) {
+                showPhotoError('A imagem deve ter no máximo 2MB.');
+                previewImage.src = '../assets/image.png';
+                return;
+            }
+
+            showPhotoError('');
+            previewImage.src = URL.createObjectURL(file);
+        });
+    }
     if (token) {
         try {
             const response = await fetch(`${BASE_URL}/petsitters/me`, {
@@ -56,6 +87,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const sitter = await response.json();
                 document.getElementById('specialty').value = sitter.specialty || '';
                 document.getElementById('certificates').value = sitter.certificates || '';
+
+                if (sitter.id && previewImage) {
+                    try {
+                        const photoResponse = await fetch(`${BASE_URL}/users/${sitter.id}/photo`, {
+                            headers: { Authorization: `Bearer ${token}` }
+                        });
+                        if (photoResponse.ok) {
+                            const blob = await photoResponse.blob();
+                            previewImage.src = URL.createObjectURL(blob);
+                        }
+                    } catch (photoErr) {
+                        console.warn('Erro ao carregar foto do pet sitter:', photoErr);
+                    }
+                }
 
                 if (sitter.availability) {
                     const partes = sitter.availability.split('|');
@@ -155,7 +200,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                     body: formData
                 });
 
-                if (response.ok) {
+                if (photoInput && photoInput.files && photoInput.files.length > 0 && photoInput.files[0].size > MAX_PHOTO_SIZE) {
+                showPhotoError('A imagem deve ter no máximo 2MB.');
+                return;
+            }
+
+            if (response.ok) {
                     alert('Dados salvos com sucesso!');
                     //form.reset();
                    // servicePricesDiv.innerHTML = '';

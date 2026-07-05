@@ -13,6 +13,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
+    const loadProtectedImage = async (imgElement, url) => {
+        try {
+            const resPhoto = await fetch(url, {
+                headers: { "Authorization": "Bearer " + token }
+            });
+            if (!resPhoto.ok) return;
+            const blob = await resPhoto.blob();
+            imgElement.src = URL.createObjectURL(blob);
+        } catch (err) {
+            console.error("Erro ao carregar foto do pet:", err);
+        }
+    };
+
     try {
         const res = await fetch(`${BASE_URL}/pets/${id}`, {
             headers: { "Authorization": "Bearer " + token }
@@ -25,13 +38,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const pet = await res.json();
         div.innerHTML = `
-            <p><strong>Nome:</strong> ${pet.name}</p>
-            <p><strong>Espécie:</strong> ${pet.specie}</p>
-            <p><strong>Raça:</strong> ${pet.breed || "-"}</p>
-            <p><strong>Idade:</strong> ${pet.age} ano(s)</p>
-            <p><strong>Observações:</strong> ${pet.observations || "-"}</p>
+            <div class="profile-header">
+                <img id="petPhoto" class="profile-photo" src="/assets/image.png" alt="Foto do pet" />
+                <div class="profile-info">
+                    <p><strong>Nome:</strong> ${pet.name}</p>
+                    <p><strong>Espécie:</strong> ${pet.specie}</p>
+                    <p><strong>Raça:</strong> ${pet.breed || "-"}</p>
+                    <p><strong>Idade:</strong> ${pet.age} ano(s)</p>
+                    <p><strong>Observações:</strong> ${pet.observations || "-"}</p>
+                </div>
+            </div>
             <button id="editarPetBtn" class="btn-block mt-20">Editar Pet</button>
         `;
+
+        const petPhoto = document.getElementById("petPhoto");
+        if (petPhoto) {
+            try {
+                await loadProtectedImage(petPhoto, `${BASE_URL}/pets/${id}/photo`);
+            } catch (err) {
+                petPhoto.src = '/assets/image.png';
+            }
+        }
 
         const editarBtn = document.getElementById("editarPetBtn");
         if (editarBtn) {

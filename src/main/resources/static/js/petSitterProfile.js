@@ -106,17 +106,50 @@ if (sitter.availability) {
             }
         } catch(e){}
 
+        
+
         // Deixar o Perfil lindo no fundo da tela
         divPerfil.innerHTML = `
-            <p><strong>Nome:</strong> ${sitter.name}</p>
-            <p><strong>E-mail:</strong> ${sitter.email || "-"}</p>
-            <p><strong>Especialidade:</strong> ${sitter.specialty || "-"}</p>
-            <p><strong>Certificados:</strong> ${sitter.certificates || "Nenhum"}</p>
+            <div class="profile-header">
+                <img id="sitterPhoto" class="profile-photo" src="/assets/image.png" alt="Foto do pet sitter" />
+                <div class="profile-info">
+                    <p><strong>Nome:</strong> ${sitter.name}</p>
+                    <p><strong>E-mail:</strong> ${sitter.email || "-"}</p>
+                    <p><strong>Especialidade:</strong> ${sitter.specialty || "-"}</p>
+                    <p><strong>Certificados:</strong> ${sitter.certificates || "Nenhum"}</p>
+                </div>
+            </div>
             <p style="margin-top:10px; color: var(--primary);"><strong>Dias Disponíveis:</strong></p>
             <p>${dias}</p>
             <p style="margin-top:10px; color: var(--primary);"><strong>Tabela de Preços:</strong></p>
             <p>${precosHtml}</p>
         `;
+
+        const sitterPhoto = document.getElementById("sitterPhoto");
+let _sitterLastObjectUrl = null;
+if (sitterPhoto) {
+    sitterPhoto.addEventListener('error', () => {
+        sitterPhoto.src = '../assets/image.png';
+    });
+
+    try {
+        const resPhoto = await fetch(`${BASE_URL}/users/${sitterId}/photo`, {
+            headers: { "Authorization": "Bearer " + token }
+        });
+        if (resPhoto.ok) {
+            const blob = await resPhoto.blob();
+            const newUrl = URL.createObjectURL(blob);
+            if (_sitterLastObjectUrl) URL.revokeObjectURL(_sitterLastObjectUrl);
+            sitterPhoto.src = newUrl;
+            _sitterLastObjectUrl = newUrl;
+        } else {
+            sitterPhoto.src = '../assets/image.png';
+        }
+    } catch (err) {
+        console.error("Erro ao carregar foto do petsitter:", err);
+        sitterPhoto.src = '../assets/image.png';
+    }
+}
     } catch (e) {
         divPerfil.innerHTML = "<p class='msg-erro'>Erro ao carregar os dados do Pet Sitter.</p>";
     }
