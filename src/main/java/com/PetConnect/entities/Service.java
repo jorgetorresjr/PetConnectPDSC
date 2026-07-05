@@ -32,4 +32,7 @@ public class Service {
     @Positive
     @Column(name = "NUM_PRECO_BASE", nullable = false)
     private BigDecimal precoBase;
+
+    @Column(name = "ATIVO", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean ativo = true;
 }

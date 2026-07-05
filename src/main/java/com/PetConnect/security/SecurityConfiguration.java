@@ -41,7 +41,9 @@ public class SecurityConfiguration {
                     // Rotas estritamente públicas
                     .requestMatchers("/auth/**", "/h2-console/**", "/users/register", "/error").permitAll()
                     // Recursos estáticos públicos
-                    .requestMatchers("/css/**", "/js/**", "/img/**", "/*.js", "/*.css", "/*.html", "/").permitAll()
+                    .requestMatchers("/css/**", "/js/**", "/img/**", "/html/**", "/*.js", "/*.css", "/*.html", "/").permitAll()
+                    // Rotas exclusivas de administrador
+                    .requestMatchers("/services/admin/**").hasRole("ADMIN")
                     // Toda rota de API (pets, petowners, etc) exige login
                     .anyRequest().authenticated()
                 )
