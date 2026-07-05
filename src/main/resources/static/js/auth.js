@@ -31,8 +31,10 @@ async function redirecionarPorPerfil(token) {
       window.location.href = "petOwnerHome.html";
     } else if (role === "PS") {
       window.location.href = "petSitterHome.html";
+    } else if (role === "AD") {
+      window.location.href = "adminServices.html";
     } else {
-      window.location.href = "home.html";
+      window.location.href = "login.html";
     }
   } catch (err) {
     console.error("Erro ao ler o token:", err);
