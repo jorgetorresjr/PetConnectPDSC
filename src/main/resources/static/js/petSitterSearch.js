@@ -62,6 +62,6 @@ async function buscar() {
         });
     } catch (e) {
         console.error(e);
-        div.innerHTML = '<p class="page-subtitle">Erro ao buscar cuidadores.</p>';
+        div.innerHTML = '<p class="page-subtitle">Erro ao buscar pet sitteres.</p>';
     }
 }

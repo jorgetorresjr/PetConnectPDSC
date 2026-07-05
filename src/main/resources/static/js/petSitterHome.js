@@ -57,8 +57,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         const agendamentos = Array.isArray(data) ? data : [];
         
         const pendentesArr = agendamentos.filter(a => a.status === "PENDENTE");
-        const aceitosArr = agendamentos.filter(a => a.status === "ACEITO" || a.status === "AGENDADO");
-        const concluidosArr = agendamentos.filter(a => a.status === "FINALIZADO");
+        const aceitosArr = agendamentos.filter(a => a.status === "ACEITO" || a.status === "Aceito");
+        const concluidosArr = agendamentos.filter(a => a.status === "CONCLUIDO");
         
         if(document.getElementById('totalAgenda')) document.getElementById('totalAgenda').textContent = aceitosArr.length;
         if(document.getElementById('totalPendentes')) document.getElementById('totalPendentes').textContent = pendentesArr.length;

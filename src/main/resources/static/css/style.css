@@ -324,3 +324,23 @@ input:focus, select:focus, textarea:focus {
 .history-item:last-child::after {
     display: none;
 }
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.page-info {
+    color: var(--subtitle);
+    font-weight: 600;
+}
+
+.pagination-controls button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
