@@ -2,6 +2,7 @@ package com.PetConnect.steps;
 
 import com.PetConnect.pages.RegisterPage;
 import io.cucumber.java.en.*;
+import org.junit.jupiter.api.Assertions;
 
 public class RegisterSteps {
 
@@ -50,6 +51,9 @@ public class RegisterSteps {
 
     @Then("the system should display an email already registered error")
     public void validateDuplicateEmailError() {
-        registerPage.validateEmailAlreadyExistsError();
+        Assertions.assertEquals(
+                "Email already registered",
+                registerPage.getRegisterErrorMessage()
+        );
     }
 }

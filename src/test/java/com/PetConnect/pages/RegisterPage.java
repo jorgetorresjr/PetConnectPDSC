@@ -46,6 +46,7 @@ public class RegisterPage {
 
     private static String registeredEmail;
     private static final String registeredPassword = "#Senha123";
+    private final By errorMessage = By.id("register-errors");
 
 
     public void open() {
@@ -144,9 +145,12 @@ public class RegisterPage {
         select.selectByValue("PO");
     }
 
-    public void validateEmailAlreadyExistsError() {
-        Alert alert = wait.until(ExpectedConditions.alertIsPresent());
-        Assertions.assertEquals("Erro ao cadastrar: Email já cadastrado", alert.getText());
-        alert.accept();
+    public String getRegisterErrorMessage() {
+        wait.until(
+                ExpectedConditions.visibilityOfElementLocated(errorMessage)
+        );
+
+        return driver.findElement(errorMessage)
+                .getText();
     }
 }
