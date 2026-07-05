@@ -1,6 +1,33 @@
 const token = localStorage.getItem("token");
 let perfilAtualId = null;
 
+function formatarStatus(status) {
+    switch (status) {
+        case "PENDENTE":
+            return "PENDENTE";
+        case "ACEITO":
+            return "ACEITO";
+        case "RECUSADO":
+            return "RECUSADO";
+        case "EM_ANDAMENTO":
+            return "EM ANDAMENTO";
+        case "CONCLUIDO":
+            return "FINALIZADO";
+        default:
+            return status || "-";
+    }
+}
+
+function formatarData(data) {
+    if (!data) return "-";
+    const partes = data.split("-");
+    return partes.length === 3 ? `${partes[2]}/${partes[1]}/${partes[0]}` : data;
+}
+
+function formatarHora(hora) {
+    return hora ? hora.slice(0, 5) : "-";
+}
+
 // ADICIONEI "async" AQUI PARA O AWAIT FUNCIONAR
 document.addEventListener('DOMContentLoaded', async function() {
     if (!token) {
@@ -45,6 +72,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             modalHistorico.classList.add('hidden');
         }
     });
+
+    
 
     // Agora o await funciona corretamente porque a função é async
     await verificarPerfil();
@@ -151,52 +180,97 @@ async function carregarSitters() {
 }
 
 async function carregarHistorico() {
-    const historicoLista = document.getElementById('historicoLista');
+    const historicoLista = document.getElementById("historicoLista");
+
     try {
-        const res = await fetch(`${BASE_URL}/appointments/my`, { headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch(`${BASE_URL}/appointments/my`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
         if (!res.ok) throw new Error("Erro");
-        
+
         const agendamentos = await res.json();
+
         historicoLista.innerHTML = "";
-        
-        const aceitos = agendamentos.filter(a => a.status === 'ACEITO' || a.status === 'AGENDADO');
-        const pendentes = agendamentos.filter(a => a.status === 'PENDENTE');
-        const finalizados = agendamentos.filter(a => a.status === 'FINALIZADO');
-        
-        if (document.getElementById('totalAgenda')) document.getElementById('totalAgenda').textContent = aceitos.length;
-        if (document.getElementById('totalPendentes')) document.getElementById('totalPendentes').textContent = pendentes.length;
-        if (document.getElementById('totalFinalizados')) document.getElementById('totalFinalizados').textContent = finalizados.length;
+
+        const aceitos = agendamentos.filter(a =>
+            a.status === "ACEITO" || a.status === "EM_ANDAMENTO"
+        );
+
+        const pendentes = agendamentos.filter(a =>
+            a.status === "PENDENTE"
+        );
+
+        const finalizados = agendamentos.filter(a =>
+            a.status === "CONCLUIDO"
+        );
+
+        document.getElementById("totalAgenda").textContent = aceitos.length;
+        document.getElementById("totalPendentes").textContent = pendentes.length;
+        document.getElementById("totalFinalizados").textContent = finalizados.length;
 
         if (agendamentos.length === 0) {
-            historicoLista.innerHTML = "<p class='page-subtitle'>Sem histórico de serviços.</p>";
+            historicoLista.innerHTML =
+                "<p class='page-subtitle'>Sem histórico de serviços.</p>";
             return;
         }
 
         agendamentos.forEach(ag => {
-            let dataFormatada = ag.serviceDate || "-";
-            if (ag.serviceDate) {
-                const parts = ag.serviceDate.split('-');
-                if (parts.length === 3) dataFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
-            }
 
             const classeStatus = (ag.status || "PENDENTE").toLowerCase();
 
             const card = document.createElement("div");
             card.className = "content-card mb-15";
+
             card.innerHTML = `
                 <div class="flex-between">
                     <div>
-                        <h4 class="mb-5">${ag.serviceName || "Serviço"}</h4>
+                        <h4 class="mb-5">${ag.serviceName || "-"}</h4>
                         <p><strong>Pet:</strong> ${ag.petName || "-"}</p>
-                        <p><strong>Sitter:</strong> ${ag.petSitterName || "-"}</p>
-                        <p><strong>Data:</strong> ${dataFormatada} às ${ag.serviceTime ? ag.serviceTime.slice(0,5) : "-"}</p>
+                        <p><strong>Cuidador:</strong> ${ag.petSitterName || "-"}</p>
+                        <p><strong>Data:</strong> ${formatarData(ag.serviceDate)} às ${formatarHora(ag.serviceTime)}</p>
                     </div>
+
                     <div class="text-right">
-                        <span class="status-badge ${classeStatus}">${ag.status || "PENDENTE"}</span>
+                        <span class="status-badge ${classeStatus}">
+                            ${formatarStatus(ag.status)}
+                        </span>
                     </div>
                 </div>
             `;
+
+            // Histórico do agendamento
+            if (ag.history) {
+
+                const histDiv = document.createElement("div");
+                histDiv.className = "history-box";
+
+                const titulo = document.createElement("div");
+                titulo.className = "history-title";
+                titulo.textContent = "Histórico";
+                histDiv.appendChild(titulo);
+
+                ag.history
+                    .split("\n")
+                    .filter(linha => linha.trim() !== "")
+                    .forEach(linha => {
+
+                        const item = document.createElement("div");
+                        item.className = "history-item";
+                        item.textContent = linha;
+
+                        histDiv.appendChild(item);
+                    });
+
+                card.appendChild(histDiv);
+            }
+
             historicoLista.appendChild(card);
+
         });
-    } catch (e) { historicoLista.innerHTML = "<p class='page-subtitle'>Erro ao carregar o histórico.</p>"; }
+
+    } catch (e) {
+        historicoLista.innerHTML =
+            "<p class='page-subtitle'>Erro ao carregar o histórico.</p>";
+    }
 }
