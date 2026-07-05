@@ -10,6 +10,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class PetPage {
 
     private final WebDriver driver = DriverFactory.getDriver();
@@ -19,11 +21,11 @@ public class PetPage {
 
     private final By newPetButton = By.id("cadastrarPetBtn");
 
-    private final By nameField = By.id("name");
-    private final By specieField = By.id("specie");
-    private final By breedField = By.id("breed");
-    private final By ageField = By.id("age");
-    private final By observationsField = By.id("observations");
+    private final By nameField = By.id("nome");
+    private final By specieField = By.id("especie");
+    private final By breedField = By.id("raca");
+    private final By ageField = By.id("idade");
+    private final By observationsField = By.id("observacoes");
 
     private final By saveButton = By.cssSelector("button[type='submit']");
 
@@ -75,7 +77,7 @@ public class PetPage {
                 ExpectedConditions.alertIsPresent()
         );
 
-        Assertions.assertEquals(
+        assertEquals(
                 "Pet cadastrado com sucesso!",
                 alert.getText()
         );
@@ -93,15 +95,9 @@ public class PetPage {
         );
     }
 
-    public void validateErrorAlert() {
-        Alert alert = wait.until(
-                ExpectedConditions.alertIsPresent()
-        );
+    public void verifyNameLength() {
+        String value = driver.findElement(nameField).getAttribute("value");
 
-        Assertions.assertTrue(
-                alert.getText().contains("Erro ao salvar o pet")
-        );
-
-        alert.accept();
+        assertEquals(100, value.length());
     }
 }

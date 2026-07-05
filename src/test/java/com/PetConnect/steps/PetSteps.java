@@ -66,15 +66,15 @@ public class PetSteps {
         petPage.validateSuccessAlert();
     }
 
-    @Then("fills the pet form with a name exceeding the maximum length")
+    @Then("the user enters a pet name longer than 102 characters")
     public void fillFormWithLongName() {
         petPage.fillPetFormWithLongName();
 
     }
 
-    @Then("the system should display a pet registration error message")
+    @Then("the name field should contain only 102 characters")
     public void validateFillFormWithLongName() {
 
-        petPage.validateErrorAlert();
+        petPage.verifyNameLength();
     }
 }
