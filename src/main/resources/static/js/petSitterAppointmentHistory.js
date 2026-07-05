@@ -44,6 +44,42 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    async function iniciarAgendamento(id) {
+        if (!token) { msg.textContent = "Sessão expirada. Faça login novamente."; return; }
+        try {
+            const res = await fetch(`${BASE_URL}/appointments/${id}/start`, {
+                method: "PUT",
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (!res.ok) {
+                msg.textContent = await res.text();
+                return;
+            }
+            msg.textContent = "Agendamento iniciado.";
+            await carregarHistorico();
+        } catch (e) {
+            msg.textContent = "Erro de conexão.";
+        }
+    }
+
+    async function finalizarAgendamento(id) {
+        if (!token) { msg.textContent = "Sessão expirada. Faça login novamente."; return; }
+        try {
+            const res = await fetch(`${BASE_URL}/appointments/${id}/finish`, {
+                method: "PUT",
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (!res.ok) {
+                msg.textContent = await res.text();
+                return;
+            }
+            msg.textContent = "Agendamento finalizado.";
+            await carregarHistorico();
+        } catch (e) {
+            msg.textContent = "Erro de conexão.";
+        }
+    }
+
     function renderHistorico(items) {
         lista.innerHTML = "";
 
@@ -69,15 +105,15 @@ document.addEventListener("DOMContentLoaded", function () {
                         <p><strong>Data:</strong> ${formatarData(a.serviceDate)} às ${formatarHora(a.serviceTime)}</p>
                     </div>
                     <div class="text-right">
-                        <span class="status-badge ${classeStatus}">${a.status || "-"}</span>
+                        <span class="status-badge ${classeStatus}">${formatarStatus(a.status)}</span>
                     </div>
                 </div>
             `;
 
-            if (a.status === "PENDENTE") {
-                const actions = document.createElement("div");
-                actions.className = "flex gap10 mt-20";
+            const actions = document.createElement("div");
+            actions.className = "flex gap10 mt-20";
 
+            if (a.status === "PENDENTE") {
                 const btnAceitar = document.createElement("button");
                 btnAceitar.textContent = "Aceitar";
                 btnAceitar.onclick = () => decidirAgendamento(a.id, "ACEITAR");
@@ -89,11 +125,74 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 actions.appendChild(btnAceitar);
                 actions.appendChild(btnRecusar);
-                card.appendChild(actions);
+            }
+
+            if (a.status === "ACEITO") {
+                const btnIniciar = document.createElement("button");
+                btnIniciar.textContent = "Iniciar";
+                btnIniciar.onclick = () => iniciarAgendamento(a.id);
+                actions.appendChild(btnIniciar);
+            }
+
+            if (a.status === "EM_ANDAMENTO") {
+                const btnFinalizar = document.createElement("button");
+                btnFinalizar.textContent = "Finalizar";
+                btnFinalizar.onclick = () => finalizarAgendamento(a.id);
+                actions.appendChild(btnFinalizar);
+            }
+
+            if (actions.children.length > 0) card.appendChild(actions);
+
+            // mostrar histórico, se houver
+            // if (a.history) {
+            //     const histDiv = document.createElement("div");
+            //     histDiv.style.marginTop = "10px";
+            //     histDiv.style.whiteSpace = "pre-wrap";
+            //     histDiv.textContent = a.history;
+            //     card.appendChild(histDiv);
+            // }
+            if (a.history) {
+                const histDiv = document.createElement("div");
+                histDiv.className = "history-box";
+
+                const titulo = document.createElement("div");
+                titulo.className = "history-title";
+                titulo.textContent = "Histórico";
+                histDiv.appendChild(titulo);
+
+                a.history
+                    .split("\n")
+                    .filter(linha => linha.trim() !== "")
+                    .forEach(linha => {
+                        const item = document.createElement("div");
+                        item.className = "history-item";
+                        item.textContent = linha;
+                        histDiv.appendChild(item);
+                    });
+
+                card.appendChild(histDiv);
             }
 
             lista.appendChild(card);
+
         });
+    }
+
+    function formatarStatus(status) {
+        switch (status) {
+            case "PENDENTE":
+                return "PENDENTE";
+            case "ACEITO":
+                return "ACEITO";
+            case "RECUSADO":
+                return "RECUSADO";
+            case "EM_ANDAMENTO":
+                return "EM ANDAMENTO";
+            case "CONCLUIDO":
+                return "FINALIZADO";
+            default:
+                return status || "-";
+        }
     }
 
     async function carregarHistorico() {
@@ -110,7 +209,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const data = await response.json();
-            const ordenado = (Array.isArray(data) ? data : []).sort((a, b) => 
+            const ordenado = (Array.isArray(data) ? data : []).sort((a, b) =>
                 new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
             );
 

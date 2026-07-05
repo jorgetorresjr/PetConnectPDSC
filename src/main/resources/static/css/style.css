@@ -273,3 +273,54 @@ input:focus, select:focus, textarea:focus {
 .modal-content, .modal-card { background: var(--card-bg); padding: 35px; border-radius: 16px; width: 90%; max-width: 700px; box-shadow: var(--shadow-hover); position: relative; }
 .fechar, .close { position: absolute; right: 24px; top: 20px; font-size: 1.6rem; color: var(--subtitle); cursor: pointer; font-weight: 700; transition: color 0.2s; }
 .fechar:hover, .close:hover { color: #ef4444; }
+
+.history-box {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #ececec;
+}
+
+.history-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 14px;
+}
+
+.history-item {
+    position: relative;
+    margin-left: 16px;
+    padding: 0 0 18px 22px;
+    color: #555;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.history-item:last-child {
+    padding-bottom: 0;
+}
+
+.history-item::before {
+    content: "";
+    position: absolute;
+    left: -4px;
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    background: #5a6cf3;
+    border-radius: 50%;
+}
+
+.history-item::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 18px;
+    width: 2px;
+    height: calc(100% - 10px);
+    background: #dfe4ea;
+}
+
+.history-item:last-child::after {
+    display: none;
+}
