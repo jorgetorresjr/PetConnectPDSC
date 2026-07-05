@@ -1,5 +1,105 @@
 const token = localStorage.getItem("token");
+const itensPorPagina = 3;
+let paginaAtualHistorico = 1;
+let historicoCompleto = [];
+
 let perfilAtualId = null;
+
+function atualizarPaginacaoHistorico() {
+    const paginacao = document.getElementById("paginacao");
+    const infoPagina = document.getElementById("infoPagina");
+    const btnAnterior = document.getElementById("btnPaginaAnterior");
+    const btnProxima = document.getElementById("btnProximaPagina");
+
+    const totalPaginas = Math.max(
+        1,
+        Math.ceil(historicoCompleto.length / itensPorPagina)
+    );
+
+    if (historicoCompleto.length === 0) {
+        paginacao.classList.add("hidden");
+        return;
+    }
+
+    paginacao.classList.remove("hidden");
+
+    infoPagina.textContent =
+        `Página ${paginaAtualHistorico} de ${totalPaginas}`;
+
+    btnAnterior.disabled = paginaAtualHistorico === 1;
+    btnProxima.disabled = paginaAtualHistorico >= totalPaginas;
+}
+
+function renderPaginaHistorico() {
+
+    const historicoLista = document.getElementById("historicoLista");
+
+    const inicio = (paginaAtualHistorico - 1) * itensPorPagina;
+    const fim = inicio + itensPorPagina;
+
+    const pagina = historicoCompleto.slice(inicio, fim);
+
+    historicoLista.innerHTML = "";
+
+    pagina.forEach(ag => {
+
+        const card = document.createElement("div");
+        card.className = "content-card mb-15";
+
+        let data = ag.serviceDate;
+
+        if (data) {
+            const p = data.split("-");
+            data = `${p[2]}/${p[1]}/${p[0]}`;
+        }
+
+        card.innerHTML = `
+            <div class="flex-between">
+                <div>
+                    <h4>${ag.serviceName}</h4>
+                    <p><strong>Pet:</strong> ${ag.petName}</p>
+                    <p><strong>Cuidador:</strong> ${ag.petSitterName}</p>
+                    <p><strong>Data:</strong> ${data} às ${ag.serviceTime.slice(0, 5)}</p>
+                </div>
+
+                <div>
+                    <span class="status-badge ${(ag.status || "").toLowerCase()}">
+                        ${formatarStatus(ag.status)}
+                    </span>
+                </div>
+            </div>
+        `;
+
+        if (ag.history) {
+
+            const hist = document.createElement("div");
+            hist.className = "history-box";
+
+            hist.innerHTML = "<div class='history-title'>Histórico</div>";
+
+            ag.history
+                .split("\n")
+                .filter(l => l.trim())
+                .forEach(l => {
+
+                    const item = document.createElement("div");
+                    item.className = "history-item";
+                    item.textContent = l;
+
+                    hist.appendChild(item);
+
+                });
+
+            card.appendChild(hist);
+        }
+
+        historicoLista.appendChild(card);
+
+    });
+
+    atualizarPaginacaoHistorico();
+
+}
 
 function formatarStatus(status) {
     switch (status) {
@@ -29,14 +129,14 @@ function formatarHora(hora) {
 }
 
 // ADICIONEI "async" AQUI PARA O AWAIT FUNCIONAR
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', async function () {
     if (!token) {
         window.location.href = "login.html";
         return;
     }
 
     document.getElementById('cadastrarPetBtn')?.addEventListener('click', () => window.location.href = 'petCreate.html');
-    
+
     document.getElementById('criarPerfilBtn')?.addEventListener('click', () => {
         window.location.href = 'petOwnerProfileCreate.html';
     });
@@ -57,7 +157,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('btnLimparBusca')?.addEventListener('click', () => {
         document.getElementById('buscaSitter').value = '';
     });
-    
+
     const modalHistorico = document.getElementById('modalHistorico');
     document.getElementById('btnAbrirHistorico')?.addEventListener('click', () => {
         modalHistorico.classList.remove('hidden');
@@ -65,7 +165,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('fecharModalHistorico')?.addEventListener('click', () => {
         modalHistorico.classList.add('hidden');
     });
-    
+
     // Fechar ao clicar fora (no overlay)
     modalHistorico?.addEventListener('click', (e) => {
         if (e.target.id === 'modalHistorico') {
@@ -73,13 +173,42 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
 
-    
+
 
     // Agora o await funciona corretamente porque a função é async
     await verificarPerfil();
     carregarPets();
     carregarSitters();
     carregarHistorico();
+
+document.getElementById("btnPaginaAnterior").onclick = () => {
+
+    console.log("CLICOU ANTERIOR");
+
+    if (paginaAtualHistorico > 1) {
+        paginaAtualHistorico--;
+        console.log("Nova página:", paginaAtualHistorico);
+        renderPaginaHistorico();
+    }
+};
+
+document.getElementById("btnProximaPagina").onclick = () => {
+
+    console.log("CLICOU PRÓXIMA");
+
+    const total = Math.ceil(
+        historicoCompleto.length / itensPorPagina
+    );
+
+    console.log("Página atual:", paginaAtualHistorico);
+    console.log("Total páginas:", total);
+
+    if (paginaAtualHistorico < total) {
+        paginaAtualHistorico++;
+        console.log("Nova página:", paginaAtualHistorico);
+        renderPaginaHistorico();
+    }
+};
 });
 
 async function verificarPerfil() {
@@ -87,7 +216,7 @@ async function verificarPerfil() {
         const res = await fetch(`${BASE_URL}/petowners/me`, {
             headers: { Authorization: `Bearer ${token}` }
         });
-        
+
         if (res.status === 403 || res.status === 401) {
             localStorage.removeItem("token");
             window.location.href = "login.html";
@@ -96,7 +225,7 @@ async function verificarPerfil() {
 
         if (res.ok) {
             const perfil = await res.json();
-            
+
             const userNameDisplay = document.getElementById("userNameDisplay");
             if (userNameDisplay && perfil.name) userNameDisplay.textContent = perfil.name.split(' ')[0];
 
@@ -116,10 +245,10 @@ async function carregarPets() {
     try {
         const res = await fetch(`${BASE_URL}/pets/my`, { headers: { Authorization: `Bearer ${token}` } });
         if (!res.ok) throw new Error("Erro");
-        
+
         const pets = await res.json();
         if (totalPetsEl) totalPetsEl.textContent = pets.length;
-        
+
         petsLista.innerHTML = "";
         if (pets.length === 0) {
             petsLista.innerHTML = "<p class='page-subtitle'>Ainda não tem pets registados.</p>";
@@ -146,7 +275,7 @@ async function carregarSitters() {
     try {
         const res = await fetch(`${BASE_URL}/petsitters`, { headers: { Authorization: `Bearer ${token}` } });
         if (!res.ok) throw new Error("Erro");
-        
+
         const sitters = await res.json();
         sittersLista.innerHTML = "";
         if (sitters.length === 0) { sittersLista.innerHTML = "<p class='page-subtitle'>Nenhum cuidador.</p>"; return; }
@@ -158,7 +287,7 @@ async function carregarSitters() {
                     const precosObj = JSON.parse(sitter.servicePrices);
                     const valores = Object.values(precosObj);
                     if (valores.length > 0) precoTexto = `R$ ${parseFloat(valores[0]).toFixed(2)} / hora`;
-                } catch (e) {}
+                } catch (e) { }
             }
 
             const card = document.createElement("div");
@@ -178,6 +307,26 @@ async function carregarSitters() {
         });
     } catch (e) { sittersLista.innerHTML = "<p class='page-subtitle'>Erro ao carregar os cuidadores.</p>"; }
 }
+
+document.getElementById("btnPaginaAnterior").onclick = () => {
+
+    if (paginaAtualHistorico > 1) {
+        paginaAtualHistorico--;
+        renderPaginaHistorico();
+    }
+
+};
+
+document.getElementById("btnProximaPagina").onclick = () => {
+
+    const total = Math.ceil(historicoCompleto.length / itensPorPagina);
+
+    if (paginaAtualHistorico < total) {
+        paginaAtualHistorico++;
+        renderPaginaHistorico();
+    }
+
+};
 
 async function carregarHistorico() {
     const historicoLista = document.getElementById("historicoLista");
@@ -215,62 +364,18 @@ async function carregarHistorico() {
             return;
         }
 
-        agendamentos.forEach(ag => {
+        historicoCompleto = agendamentos;
+        paginaAtualHistorico = 1;
 
-            const classeStatus = (ag.status || "PENDENTE").toLowerCase();
+        renderPaginaHistorico();
 
-            const card = document.createElement("div");
-            card.className = "content-card mb-15";
-
-            card.innerHTML = `
-                <div class="flex-between">
-                    <div>
-                        <h4 class="mb-5">${ag.serviceName || "-"}</h4>
-                        <p><strong>Pet:</strong> ${ag.petName || "-"}</p>
-                        <p><strong>Cuidador:</strong> ${ag.petSitterName || "-"}</p>
-                        <p><strong>Data:</strong> ${formatarData(ag.serviceDate)} às ${formatarHora(ag.serviceTime)}</p>
-                    </div>
-
-                    <div class="text-right">
-                        <span class="status-badge ${classeStatus}">
-                            ${formatarStatus(ag.status)}
-                        </span>
-                    </div>
-                </div>
-            `;
-
-            // Histórico do agendamento
-            if (ag.history) {
-
-                const histDiv = document.createElement("div");
-                histDiv.className = "history-box";
-
-                const titulo = document.createElement("div");
-                titulo.className = "history-title";
-                titulo.textContent = "Histórico";
-                histDiv.appendChild(titulo);
-
-                ag.history
-                    .split("\n")
-                    .filter(linha => linha.trim() !== "")
-                    .forEach(linha => {
-
-                        const item = document.createElement("div");
-                        item.className = "history-item";
-                        item.textContent = linha;
-
-                        histDiv.appendChild(item);
-                    });
-
-                card.appendChild(histDiv);
-            }
-
-            historicoLista.appendChild(card);
-
-        });
-
-    } catch (e) {
-        historicoLista.innerHTML =
-            "<p class='page-subtitle'>Erro ao carregar o histórico.</p>";
-    }
+    // } catch (e) {
+    //     historicoLista.innerHTML =
+    //         "<p class='page-subtitle'>Erro ao carregar o histórico.</p>";
+    // }
+    }catch (e) {
+    console.error("ERRO:", e);
 }
+}
+
+

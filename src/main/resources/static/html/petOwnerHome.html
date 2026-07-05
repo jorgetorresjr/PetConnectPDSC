@@ -1,88 +1,109 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PetConnect - Área do Tutor</title>
     <link rel="stylesheet" href="../css/style.css?v=11">
 </head>
+
 <body>
 
-<nav class="navbar">
-    <div class="nav-brand">
-        <img src="../img/Logo_PetConnect.png" alt="Logo">
-        <span>PetConnect</span>
-    </div>
-    <div class="nav-user-zone">
-        <span><span id="userNameDisplay">Usuário</span> | Tutor</span>
-        <button id="btnLogout" class="btn-danger">Sair</button>
-    </div>
-</nav>
-
-<div class="dashboard-container">
-    <h1 class="page-title">Olá, Tutor! </h1>
-    <p class="page-subtitle">Gerencie seus pets e encontre cuidadores qualificados.</p>
-    
-    <div class="metrics-grid">
-        <div class="info-card">
-            <h3>🐶 Pets</h3>
-            <p id="totalPets" class="metric-value">--</p>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <img src="../img/Logo_PetConnect.png" alt="Logo">
+            <span>PetConnect</span>
         </div>
-        <div class="info-card">
-            <h3>📅 Agendamentos</h3>
-            <p id="totalAgenda" class="metric-value">--</p>
+        <div class="nav-user-zone">
+            <span><span id="userNameDisplay"></span> Tutor</span>
+            <button id="btnLogout" class="btn-outline">Sair</button>
         </div>
-        <div class="info-card">
-            <h3>⏳ Pendentes</h3>
-            <p id="totalPendentes" class="metric-value">--</p>
+    </nav>
+
+    <div class="dashboard-container">
+        <h1 class="page-title">Olá, Tutor! </h1>
+        <p class="page-subtitle">Gerencie seus pets e encontre cuidadores qualificados.</p>
+
+        <div class="metrics-grid">
+            <div class="info-card">
+                <h3>🐶 Pets</h3>
+                <p id="totalPets" class="metric-value">--</p>
+            </div>
+            <div class="info-card">
+                <h3>📅 Agendamentos</h3>
+                <p id="totalAgenda" class="metric-value">--</p>
+            </div>
+            <div class="info-card">
+                <h3>⏳ Pendentes</h3>
+                <p id="totalPendentes" class="metric-value">--</p>
+            </div>
+            <div class="info-card">
+                <h3>✔ Finalizados</h3>
+                <p id="totalFinalizados" class="metric-value">--</p>
+            </div>
         </div>
-        <div class="info-card">
-            <h3>✔ Finalizados</h3>
-            <p id="totalFinalizados" class="metric-value">--</p>
+
+        <div class="actions-group">
+            <button id="criarPerfilBtn"> Criar Perfil</button>
+            <button id="cadastrarPetBtn"> Novo Pet</button>
+            <button id="btnToggleBusca" class="btn-secondary"> Buscar Cuidador</button>
+            <button id="btnAbrirHistorico" class="btn-secondary"> Histórico de Agendamentos</button>
         </div>
-    </div>
 
-    <div class="actions-group">
-        <button id="criarPerfilBtn"> Criar Perfil</button>
-        <button id="cadastrarPetBtn"> Novo Pet</button>
-        <button id="btnToggleBusca" class="btn-secondary"> Buscar Cuidador</button>
-        <button id="btnAbrirHistorico" class="btn-secondary"> Histórico de Agendamentos</button>
-    </div>
-
-    <div id="secaoBuscaSitter" class="search-box-wrapper hidden">
-        <h3 class="mb-15">Encontre o Cuidador Perfeito</h3>
-        <div class="search-controls">
-            <input type="text" id="buscaSitter" placeholder="Digite o serviço desejado (ex: Passeio)">
-            <button id="btnBuscarSitter">Buscar</button>
-            <button id="btnLimparBusca" class="btn-secondary">Limpar Filtro</button>
+        <div id="secaoBuscaSitter" class="search-box-wrapper hidden">
+            <h3 class="mb-15">Encontre o Cuidador Perfeito</h3>
+            <div class="search-controls">
+                <input type="text" id="buscaSitter" placeholder="Digite o serviço desejado (ex: Passeio)">
+                <button id="btnBuscarSitter">Buscar</button>
+                <button id="btnLimparBusca" class="btn-secondary">Limpar Filtro</button>
+            </div>
         </div>
-    </div>
 
-    <hr class="hr-divider">
+        <hr class="hr-divider">
 
-    <h3 class="section-heading mb-15">🐾 Meus Pets Cadastrados</h3>
-    <div id="petsLista" class="card-grid mb-40">
-        <p class="page-subtitle">Carregando seus pets...</p>
-    </div>
+        <h3 class="section-heading mb-15">🐾 Meus Pets Cadastrados</h3>
+        <div id="petsLista" class="card-grid mb-40">
+            <p class="page-subtitle">Carregando seus pets...</p>
+        </div>
 
-    <h3 class="section-heading">✨ Cuidadores Disponíveis</h3>
-    <div id="sittersLista" class="card-grid">
-        <p class="page-subtitle">Carregando profissionais da sua região...</p>
-    </div>
-</div>
-
-<div id="modalHistorico" class="modal-overlay hidden">
-    <div class="modal-content">
-        <span id="fecharModalHistorico" class="fechar">&times;</span>
-        <h3>📜 Histórico de Agendamentos</h3>
-        <div id="historicoLista" class="mt-20">
-            <p class="page-subtitle">Carregando histórico...</p>
+        <h3 class="section-heading">✨ Cuidadores Disponíveis</h3>
+        <div id="sittersLista" class="card-grid">
+            <p class="page-subtitle">Carregando profissionais da sua região...</p>
         </div>
     </div>
-</div>
 
-<script src="../js/auth.js" defer></script>
-<script src="../js/petOwnerHome.js" defer></script>
+    <div id="modalHistorico" class="modal-overlay hidden">
+        <div class="modal-content">
+
+            <span id="fecharModalHistorico" class="fechar">
+                &times;
+            </span>
+
+            <h3>📜 Histórico de Agendamentos</h3>
+
+            <div id="historicoLista" class="mt-20">
+            </div>
+
+            <div id="paginacao" class="pagination-container">
+
+                <button type="button" id="btnPaginaAnterior">
+                    < </button>
+
+                        <span id="infoPagina"></span>
+
+                        <button type="button" id="btnProximaPagina">
+                            >
+                        </button>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script src="../js/auth.js" defer></script>
+    <script src="../js/petOwnerHome.js" defer></script>
 
 </body>
+
 </html>
