@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetConnect - Administração de Serviços</title>
+    <link rel="stylesheet" href="../css/style.css?v=11">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-brand">
+        <img src="../img/Logo_PetConnect.png" alt="Logo">
+        <span>PetConnect</span>
+    </div>
+    <div class="nav-user-zone">
+        <span>Administrador</span>
+        <button id="btnLogout" class="btn-danger">Sair</button>
+    </div>
+</nav>
+
+<div class="dashboard-container">
+    <h1 class="page-title">Gerenciamento de Serviços</h1>
+    <p class="page-subtitle">Cadastre e gerencie os tipos de serviços disponíveis na plataforma.</p>
+
+    <div class="form-card mb-40">
+        <h3 class="section-heading mb-15">Novo Serviço</h3>
+
+        <div id="msgFeedback" style="display:none; padding:12px 16px; border-radius:8px; margin-bottom:16px; font-weight:600;"></div>
+
+        <div>
+            <label for="nomeServico">Nome *</label>
+            <input type="text" id="nomeServico" placeholder="Ex: Banho e Tosa" maxlength="100">
+        </div>
+        <div>
+            <label for="descricaoServico">Descrição</label>
+            <input type="text" id="descricaoServico" placeholder="Descrição do serviço" maxlength="255">
+        </div>
+        <div>
+            <label for="precoBase">Preço Base (R$) *</label>
+            <input type="number" id="precoBase" min="0.01" step="0.01" placeholder="Ex: 50.00">
+        </div>
+
+        <div class="actions-group" style="margin-top: 5px;">
+            <button id="btnCadastrarServico">Cadastrar Serviço</button>
+        </div>
+    </div>
+
+    <hr class="hr-divider">
+
+    <h3 class="section-heading mb-15">Serviços Cadastrados</h3>
+    <div id="servicosLista" class="card-grid">
+        <p class="page-subtitle">Carregando serviços...</p>
+    </div>
+</div>
+
+<script src="../js/auth.js" defer></script>
+<script src="../js/adminServices.js" defer></script>
+
+</body>
+</html>
