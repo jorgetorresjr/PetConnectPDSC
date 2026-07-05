@@ -62,14 +62,35 @@ function renderPaginaHistorico() {
                     <p><strong>Data:</strong> ${data} às ${ag.serviceTime.slice(0, 5)}</p>
                 </div>
 
-                <div>
-                    <span class="status-badge ${(ag.status || "").toLowerCase()}">
-                        ${formatarStatus(ag.status)}
-                    </span>
-                </div>
+               <div class="status-actions">
+
+    <span class="status-badge ${(ag.status || "").toLowerCase()}">
+        ${formatarStatus(ag.status)}
+    </span>
+
+    ${ag.status === "PENDENTE"
+                ? `<button
+                class="btn-secondary btn-cancelar"
+                data-id="${ag.id}">
+                Cancelar
+           </button>`
+                : ""
+            }
+
+</div>
             </div>
         `;
+        const btnCancelar =
+            card.querySelector(".btn-cancelar");
 
+        if (btnCancelar) {
+
+            btnCancelar.addEventListener(
+                "click",
+                () => cancelarAgendamento(ag.id)
+            );
+
+        }
         if (ag.history) {
 
             const hist = document.createElement("div");
@@ -181,34 +202,34 @@ document.addEventListener('DOMContentLoaded', async function () {
     carregarSitters();
     carregarHistorico();
 
-document.getElementById("btnPaginaAnterior").onclick = () => {
+    document.getElementById("btnPaginaAnterior").onclick = () => {
 
-    console.log("CLICOU ANTERIOR");
+        console.log("CLICOU ANTERIOR");
 
-    if (paginaAtualHistorico > 1) {
-        paginaAtualHistorico--;
-        console.log("Nova página:", paginaAtualHistorico);
-        renderPaginaHistorico();
-    }
-};
+        if (paginaAtualHistorico > 1) {
+            paginaAtualHistorico--;
+            console.log("Nova página:", paginaAtualHistorico);
+            renderPaginaHistorico();
+        }
+    };
 
-document.getElementById("btnProximaPagina").onclick = () => {
+    document.getElementById("btnProximaPagina").onclick = () => {
 
-    console.log("CLICOU PRÓXIMA");
+        console.log("CLICOU PRÓXIMA");
 
-    const total = Math.ceil(
-        historicoCompleto.length / itensPorPagina
-    );
+        const total = Math.ceil(
+            historicoCompleto.length / itensPorPagina
+        );
 
-    console.log("Página atual:", paginaAtualHistorico);
-    console.log("Total páginas:", total);
+        console.log("Página atual:", paginaAtualHistorico);
+        console.log("Total páginas:", total);
 
-    if (paginaAtualHistorico < total) {
-        paginaAtualHistorico++;
-        console.log("Nova página:", paginaAtualHistorico);
-        renderPaginaHistorico();
-    }
-};
+        if (paginaAtualHistorico < total) {
+            paginaAtualHistorico++;
+            console.log("Nova página:", paginaAtualHistorico);
+            renderPaginaHistorico();
+        }
+    };
 });
 
 async function verificarPerfil() {
@@ -369,13 +390,46 @@ async function carregarHistorico() {
 
         renderPaginaHistorico();
 
-    // } catch (e) {
-    //     historicoLista.innerHTML =
-    //         "<p class='page-subtitle'>Erro ao carregar o histórico.</p>";
-    // }
-    }catch (e) {
-    console.error("ERRO:", e);
+        // } catch (e) {
+        //     historicoLista.innerHTML =
+        //         "<p class='page-subtitle'>Erro ao carregar o histórico.</p>";
+        // }
+    } catch (e) {
+        console.error("ERRO:", e);
+    }
 }
+
+async function cancelarAgendamento(id) {
+
+    if (!confirm("Deseja cancelar este agendamento?")) {
+        return;
+    }
+
+    try {
+
+        const res = await fetch(
+            `${BASE_URL}/appointments/${id}/cancel`,
+            {
+                method: "PUT",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+
+        if (!res.ok) {
+            const msg = await res.text();
+            throw new Error(msg);
+        }
+
+        await carregarHistorico();
+
+    } catch (e) {
+
+        console.error(e);
+        alert(e.message);
+
+    }
 }
 
 

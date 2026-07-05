@@ -71,13 +71,16 @@ public class AppointmentController {
         LocalTime serviceTime = LocalTime.parse(dto.getServiceTime());
 
         Optional<Pet> petOpt = petRepository.findById(dto.getPetId());
-        if (petOpt.isEmpty()) return ResponseEntity.badRequest().body("Pet não encontrado.");
+        if (petOpt.isEmpty())
+            return ResponseEntity.badRequest().body("Pet não encontrado.");
 
         Optional<PetSitter> sitterOpt = petSitterRepository.findById(dto.getPetSitterId());
-        if (sitterOpt.isEmpty()) return ResponseEntity.badRequest().body("Pet sitter não encontrado.");
+        if (sitterOpt.isEmpty())
+            return ResponseEntity.badRequest().body("Pet sitter não encontrado.");
 
         Optional<Service> serviceOpt = serviceRepository.findById(dto.getServiceId());
-        if (serviceOpt.isEmpty()) return ResponseEntity.badRequest().body("Serviço não encontrado.");
+        if (serviceOpt.isEmpty())
+            return ResponseEntity.badRequest().body("Serviço não encontrado.");
 
         PetOwner owner = ownerOpt.get();
         Pet pet = petOpt.get();
@@ -112,6 +115,7 @@ public class AppointmentController {
         Appointment saved = appointmentRepository.save(appointment);
         return ResponseEntity.ok(toResponse(saved));
     }
+
     @GetMapping("/petsitter")
     public ResponseEntity<List<Map<String, Object>>> listForPetSitter() {
         String email = org.springframework.security.core.context.SecurityContextHolder
@@ -148,8 +152,7 @@ public class AppointmentController {
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateAppointmentStatus(
             @PathVariable Long id,
-            @RequestParam AppointmentStatus status
-    ) {
+            @RequestParam AppointmentStatus status) {
         System.out.println("[DEBUG] updateAppointmentStatus chamado - id=" + id + " status=" + status);
         if (status != AppointmentStatus.ACEITO && status != AppointmentStatus.RECUSADO) {
             return ResponseEntity.badRequest().body("Status inválido. Use ACEITO ou RECUSADO.");
@@ -187,7 +190,8 @@ public class AppointmentController {
                 .getContext().getAuthentication().getName();
 
         Optional<Appointment> appointmentOpt = appointmentRepository.findById(id);
-        if (appointmentOpt.isEmpty()) return ResponseEntity.badRequest().body("Agendamento não encontrado.");
+        if (appointmentOpt.isEmpty())
+            return ResponseEntity.badRequest().body("Agendamento não encontrado.");
 
         Appointment a = appointmentOpt.get();
         if (a.getPetSitter() == null || !email.equals(a.getPetSitter().getEmail())) {
@@ -209,7 +213,8 @@ public class AppointmentController {
                 .getContext().getAuthentication().getName();
 
         Optional<Appointment> appointmentOpt = appointmentRepository.findById(id);
-        if (appointmentOpt.isEmpty()) return ResponseEntity.badRequest().body("Agendamento não encontrado.");
+        if (appointmentOpt.isEmpty())
+            return ResponseEntity.badRequest().body("Agendamento não encontrado.");
 
         Appointment a = appointmentOpt.get();
         if (a.getPetSitter() == null || !email.equals(a.getPetSitter().getEmail())) {
@@ -225,22 +230,62 @@ public class AppointmentController {
         return ResponseEntity.ok(toResponse(saved));
     }
 
-private Map<String, Object> toResponse(Appointment a) {
-    Map<String, Object> m = new LinkedHashMap<>();
-    m.put("id", a.getId());
-    m.put("status", a.getStatus());
-    m.put("serviceDate", a.getServiceDate());
-    m.put("serviceTime", a.getServiceTime());
-    m.put("serviceId", a.getService() != null ? a.getService().getId() : null);
-    m.put("serviceName", a.getService() != null ? a.getService().getNome() : null);
-    m.put("petId", a.getPet() != null ? a.getPet().getId() : null);
-    m.put("petName", a.getPet() != null ? a.getPet().getName() : null);
-    m.put("petOwnerId", a.getPetOwner() != null ? a.getPetOwner().getId() : null);
-    m.put("petOwnerName", a.getPetOwner() != null ? a.getPetOwner().getName() : null);
-    m.put("petSitterId", a.getPetSitter() != null ? a.getPetSitter().getId() : null);
-    m.put("petSitterName", a.getPetSitter() != null ? a.getPetSitter().getName() : null);
-    m.put("createdAt", a.getCreatedAt());
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<?> cancelAppointment(@PathVariable Long id) {
+
+        String email = org.springframework.security.core.context.SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        Optional<Appointment> appointmentOpt = appointmentRepository.findById(id);
+
+        if (appointmentOpt.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body("Agendamento não encontrado.");
+        }
+
+        Appointment appointment = appointmentOpt.get();
+
+        if (appointment.getPetOwner() == null ||
+                !email.equals(appointment.getPetOwner().getEmail())) {
+
+            return ResponseEntity.status(403)
+                    .body("Apenas o tutor pode cancelar.");
+        }
+
+        if (appointment.getStatus() != AppointmentStatus.PENDENTE) {
+            return ResponseEntity.badRequest()
+                    .body("Somente agendamentos pendentes podem ser cancelados.");
+        }
+
+        appointment.setStatus(AppointmentStatus.RECUSADO);
+
+        appendStatusHistory(
+                appointment,
+                "CANCELADO PELO TUTOR");
+
+        Appointment saved = appointmentRepository.save(appointment);
+
+        return ResponseEntity.ok(toResponse(saved));
+    }
+
+    private Map<String, Object> toResponse(Appointment a) {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("id", a.getId());
+        m.put("status", a.getStatus());
+        m.put("serviceDate", a.getServiceDate());
+        m.put("serviceTime", a.getServiceTime());
+        m.put("serviceId", a.getService() != null ? a.getService().getId() : null);
+        m.put("serviceName", a.getService() != null ? a.getService().getNome() : null);
+        m.put("petId", a.getPet() != null ? a.getPet().getId() : null);
+        m.put("petName", a.getPet() != null ? a.getPet().getName() : null);
+        m.put("petOwnerId", a.getPetOwner() != null ? a.getPetOwner().getId() : null);
+        m.put("petOwnerName", a.getPetOwner() != null ? a.getPetOwner().getName() : null);
+        m.put("petSitterId", a.getPetSitter() != null ? a.getPetSitter().getId() : null);
+        m.put("petSitterName", a.getPetSitter() != null ? a.getPetSitter().getName() : null);
+        m.put("createdAt", a.getCreatedAt());
         m.put("history", a.getStatusHistory());
-    return m;
-}
+        return m;
+    }
 }
