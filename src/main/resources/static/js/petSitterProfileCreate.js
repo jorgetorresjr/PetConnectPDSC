@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', async function () {
     const servicesCheckboxesDiv = document.getElementById('servicesCheckboxes');
+  
     const servicePricesDiv = document.getElementById('servicePrices');
     if (servicesCheckboxesDiv && servicePricesDiv) {
         servicesCheckboxesDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => {
@@ -24,7 +25,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     input.placeholder = 'R$ 0.00';
 
                     // Validação em tempo real
-                    input.addEventListener('input', function() {
+                    input.addEventListener('input', function () {
                         if (this.value && parseFloat(this.value) > 999999.99) {
                             this.value = 999999.99;
                         }
@@ -77,6 +78,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             previewImage.src = URL.createObjectURL(file);
         });
     }
+       await carregarServicos();
+       
     if (token) {
         try {
             const response = await fetch(`${BASE_URL}/petsitters/me`, {
@@ -175,14 +178,18 @@ document.addEventListener('DOMContentLoaded', async function () {
             });
 
             const servicePrices = {};
+
             selectedCheckboxes.forEach(cb => {
-                const serviceName = cb.getAttribute('data-name');
-                const priceInput = form.querySelector(`[name='preco_${serviceName}']`);
+                const serviceId = cb.dataset.id;
+                const priceInput = document.getElementById(`preco_${serviceId}`);
+
                 if (priceInput) {
-                    servicePrices[serviceName] = priceInput.value;
+                    servicePrices[serviceId] = priceInput.value;
                 }
             });
+
             formData.set('servicePrices', JSON.stringify(servicePrices));
+
 
             const dias = Array.from(document.querySelectorAll('input[name="dias"]:checked')).map(cb => cb.value);
             const horarioInicio = document.getElementById('horarioInicio').value;
@@ -201,15 +208,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                 });
 
                 if (photoInput && photoInput.files && photoInput.files.length > 0 && photoInput.files[0].size > MAX_PHOTO_SIZE) {
-                showPhotoError('A imagem deve ter no máximo 2MB.');
-                return;
-            }
+                    showPhotoError('A imagem deve ter no máximo 2MB.');
+                    return;
+                }
 
-            if (response.ok) {
+                if (response.ok) {
                     alert('Dados salvos com sucesso!');
                     //form.reset();
-                   // servicePricesDiv.innerHTML = '';
-                     window.location.href = '../html/petSitterHome.html';
+                    // servicePricesDiv.innerHTML = '';
+                    window.location.href = '../html/petSitterHome.html';
                 } else {
                     const error = await response.text();
                     alert('Atenção:\n' + error);
@@ -219,4 +226,92 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         });
     }
+
+   
 });
+
+async function carregarServicos() {
+    const servicesCheckboxesDiv = document.getElementById('servicesCheckboxes');
+    const servicePricesDiv = document.getElementById('servicePrices');
+
+    const response = await fetch(`${BASE_URL}/services`);
+    if (!response.ok) {
+        throw new Error('Erro ao carregar serviços');
+    }
+
+    const services = await response.json();
+
+    servicesCheckboxesDiv.innerHTML = '';
+
+    services.forEach(service => {
+        const wrapper = document.createElement('div');
+
+        wrapper.innerHTML = `
+            <label>
+                <input
+                    type="checkbox"
+                    value="${service.id}"
+                    data-id="${service.id}"
+                    data-name="${service.nome}"
+                    data-base-price="${service.precoBase}">
+                ${service.nome}
+            </label>
+            <small>${service.descricao}</small>
+        `;
+
+        servicesCheckboxesDiv.appendChild(wrapper);
+    });
+
+    configurarEventosServicos();
+}
+
+function configurarEventosServicos() {
+    const servicesCheckboxesDiv = document.getElementById('servicesCheckboxes');
+    const servicePricesDiv = document.getElementById('servicePrices');
+
+    servicesCheckboxesDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+
+        cb.addEventListener('change', function () {
+
+            const serviceId = cb.dataset.id;
+            const serviceName = cb.dataset.name;
+            const precoBase = parseFloat(cb.dataset.basePrice);
+
+            const priceFieldId = `preco_field_${serviceId}`;
+
+            if (cb.checked) {
+
+                const label = document.createElement('label');
+                label.textContent = `Preço para ${serviceName} (mínimo R$ ${precoBase}):`;
+
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.name = `preco_${serviceId}`;
+                input.id = `preco_${serviceId}`;
+                input.min = precoBase;
+                input.value = precoBase;
+                input.max = 999999.99;
+                input.step = 0.01;
+                input.required = true;
+
+                input.addEventListener('change', function () {
+                    if (parseFloat(this.value) < precoBase) {
+                        alert(`O valor mínimo para ${serviceName} é R$ ${precoBase}`);
+                        this.value = precoBase;
+                    }
+                });
+
+                const div = document.createElement('div');
+                div.id = priceFieldId;
+                div.appendChild(label);
+                div.appendChild(input);
+
+                servicePricesDiv.appendChild(div);
+
+            } else {
+                const div = document.getElementById(priceFieldId);
+                if (div) div.remove();
+            }
+        });
+    });
+}
