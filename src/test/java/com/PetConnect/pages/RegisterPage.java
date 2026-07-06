@@ -50,12 +50,10 @@ public class RegisterPage {
 
 
     public void open() {
-
         driver.get(BASE_URL + "register.html");
 
         wait.until(
-                ExpectedConditions
-                        .presenceOfElementLocated(name)
+                ExpectedConditions.visibilityOfElementLocated(name)
         );
     }
 
@@ -106,7 +104,7 @@ public class RegisterPage {
         driver.findElement(emailInput).sendKeys(email);
         driver.findElement(password).sendKeys(registeredPassword);
         driver.findElement(cpf).sendKeys("529.982.247-25");
-        driver.findElement(birthDate).sendKeys("2000-01-01");
+        driver.findElement(birthDate).sendKeys("01-01-2000");
         driver.findElement(phone).sendKeys("81999999999");
         driver.findElement(street).sendKeys("Rua Um");
         driver.findElement(number).sendKeys("123");
@@ -152,5 +150,30 @@ public class RegisterPage {
 
         return driver.findElement(errorMessage)
                 .getText();
+    }
+
+    public void fillFormWithInvalidBirthDate(String email) {
+            driver.findElement(name).sendKeys("Flavio Augusto");
+            driver.findElement(emailInput).sendKeys(email);
+            driver.findElement(password).sendKeys(registeredPassword);
+            driver.findElement(cpf).sendKeys("529.982.247-25");
+            driver.findElement(birthDate).sendKeys("01-01-1843");
+            driver.findElement(phone).sendKeys("81999999999");
+            driver.findElement(street).sendKeys("Rua Um");
+            driver.findElement(number).sendKeys("123");
+            driver.findElement(complement).sendKeys("Apto 1");
+            driver.findElement(neighborhood).sendKeys("Centro");
+            driver.findElement(city).sendKeys("Recife");
+            driver.findElement(state).sendKeys("PE");
+            driver.findElement(cep).sendKeys("50000-000");
+    }
+
+    public void fillInvalidForm(String role) {
+        registeredEmail = "user" + UUID.randomUUID() + "@email.com";
+
+        fillFormWithInvalidBirthDate(registeredEmail);
+
+        Select select = new Select(driver.findElement(roleSelect));
+        select.selectByValue(role);
     }
 }

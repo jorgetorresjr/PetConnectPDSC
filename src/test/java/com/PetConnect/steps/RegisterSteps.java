@@ -56,4 +56,18 @@ public class RegisterSteps {
                 registerPage.getRegisterErrorMessage()
         );
     }
+
+    @When("the user enters an invalid date of birth")
+    public void theUserEntersAnInvalidDateOfBirth() {
+        registerPage.fillInvalidForm("PO");
+    }
+
+    @Then("the system should display a date of birth validation error")
+    public void theSystemShouldDisplayADateOfBirthValidationError() {
+        Assertions.assertEquals(
+                "• Data de Nascimento: O usuário deve ter entre 18 e 110 anos.",
+                registerPage.getRegisterErrorMessage()
+        );
+
+    }
 }
