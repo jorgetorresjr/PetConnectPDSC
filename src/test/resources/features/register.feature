@@ -12,3 +12,9 @@ Feature: User registration
     When the user submits registration data with an existing email
     And clicks the register button
     Then the system should display an email already registered error
+
+  Scenario: Registration with an invalid date of birth
+    Given the user is on the registration page
+    When the user enters an invalid date of birth
+    And clicks the register button
+    Then the system should display a date of birth validation error

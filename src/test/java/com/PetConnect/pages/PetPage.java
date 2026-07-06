@@ -28,6 +28,8 @@ public class PetPage {
     private final By observationsField = By.id("observacoes");
 
     private final By saveButton = By.cssSelector("button[type='submit']");
+    private final By viewProfileButton = By.xpath("//button[contains(text(),'Ver Perfil')]");
+
 
     public void open() {
         driver.get(BASE_URL + "petCreate.html");
@@ -48,6 +50,13 @@ public class PetPage {
         driver.findElement(breedField).sendKeys(breed);
         driver.findElement(ageField).sendKeys(age);
         driver.findElement(observationsField).sendKeys(observations);
+    }
+
+    public void openFirstPetProfile() {
+        wait.until(ExpectedConditions.urlContains("petOwnerHome.html"));
+
+        wait.until(ExpectedConditions.elementToBeClickable(viewProfileButton))
+                .click();
     }
 
     public void submitPetRegistration() {

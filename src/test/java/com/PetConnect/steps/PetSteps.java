@@ -12,6 +12,39 @@ public class PetSteps {
     private final LoginPage loginPage = new LoginPage();
     private final PetPage petPage = new PetPage();
 
+    @Given("the user is registered as a pet owner")
+    public void userIsRegisteredAsPetOwner() {
+        registerPage.open();
+        registerPage.fillValidForm("PO");
+        registerPage.clickRegister();
+        registerPage.validateSuccessAlert();
+        registerPage.validateRedirectToLogin();
+    }
+
+    @And("the user is logged in")
+    public void userIsLoggedIn() {
+        loginPage.fillCredentials(
+                registerPage.getRegisteredEmail(),
+                registerPage.getRegisteredPassword()
+        );
+
+        loginPage.clickLoginButton();
+        Assertions.assertTrue(loginPage.isHomePageLoaded("petOwnerHome.html"));
+    }
+
+    @And("the user has a registered pet")
+    public void userHasRegisteredPet() {
+        petPage.clickNewPetButton();
+        petPage.fillPetForm("Rex", "Cachorro", "Labrador", "5", "obs");
+        petPage.submitPetRegistration();
+        petPage.validateSuccessAlert();
+    }
+
+    @And("the user is on the pet profile page")
+    public void userIsOnPetProfilePage() {
+        petPage.open();
+    }
+
     @When("the user registers as a pet owner with valid data")
     public void registerPetOwner() {
 
@@ -42,9 +75,8 @@ public class PetSteps {
         petPage.isPetPageLoaded();
     }
 
-    @And("fills the pet form with valid data")
+    @And("the user fills the pet form with valid data")
     public void fillPetForm() {
-
         petPage.fillPetForm(
                 "Rex",
                 "Cachorro",
@@ -66,13 +98,13 @@ public class PetSteps {
         petPage.validateSuccessAlert();
     }
 
-    @Then("the user enters a pet name longer than 102 characters")
+    @When("the user enters a pet name longer than 100 characters")
     public void fillFormWithLongName() {
         petPage.fillPetFormWithLongName();
 
     }
 
-    @Then("the name field should contain only 102 characters")
+    @Then("the name field should contain only 100 characters")
     public void validateFillFormWithLongName() {
 
         petPage.verifyNameLength();
