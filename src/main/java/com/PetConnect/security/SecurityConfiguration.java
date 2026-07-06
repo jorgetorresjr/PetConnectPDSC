@@ -39,7 +39,7 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                     // Rotas estritamente públicas
-                    .requestMatchers("/auth/**", "/h2-console/**", "/users/register", "/error").permitAll()
+                    .requestMatchers("/auth/**", "/h2-console/**", "/users/register", "/error", "/services").permitAll()
                     // Recursos estáticos públicos
                     .requestMatchers("/css/**", "/js/**", "/img/**", "/html/**", "/*.js", "/*.css", "/*.html", "/").permitAll()
                     // Rotas exclusivas de administrador
